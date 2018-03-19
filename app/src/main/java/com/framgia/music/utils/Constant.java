@@ -1,7 +1,6 @@
 package com.framgia.music.utils;
 
 import android.support.annotation.StringDef;
-import com.framgia.music.BuildConfig;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -24,12 +23,6 @@ public final class Constant {
         String CLASSICAL = "classical";
         String COUNTRY = "country";
     }
-
-    public static final String BASE_URL = "http://api.soundcloud.com";
-    public static final String TRACK_GENRES_URL =
-            BASE_URL + "/tracks?client_id=" + BuildConfig.API_KEY + "&genres=";
-    public static final String MUSIC_SEARCH_URL =
-            BASE_URL + "/tracks?client_id=" + BuildConfig.API_KEY + "&q=";
 
     private Constant() {
     }
