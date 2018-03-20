@@ -2,4 +2,9 @@
 <resources>
     <dimen name="dp_50">50dp</dimen>
     <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_120">120dp</dimen>
+    <dimen name="dp_180">180dp</dimen>
+    <dimen name="dp_30">30dp</dimen>
+    <dimen name="sp_23">23sp</dimen>
+    <dimen name="ag_90">90</dimen>
 </resources>
