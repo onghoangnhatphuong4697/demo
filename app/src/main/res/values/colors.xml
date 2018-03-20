@@ -5,4 +5,6 @@
     <color name="colorGray">#E0E0E0</color>
     <color name="colorWhite">#fff</color>
     <color name="colorGrayTab">#616161</color>
+    <color name="colorOrange">#f7770f</color>
+    <color name="colorWhiteOrange">#ead4bd</color>
 </resources>
