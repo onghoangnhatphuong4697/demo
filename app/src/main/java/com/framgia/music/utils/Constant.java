@@ -25,21 +25,33 @@ public final class Constant {
         String COUNTRY = "country";
     }
 
+    public static final String CLIENT_ID = "?client_id=" + BuildConfig.API_KEY;
+    public static final String KIND = "kind";
+    public static final String ID = "id";
+    public static final String URI = "uri";
+    public static final String USER_ID = "user_id";
+    public static final String GENRE = "genre";
+    public static final String TITLE = "title";
+    public static final String STREAM_URL = "stream_url";
+    public static final String ARTWORK_URL = "artwork_url";
+    public static final String USER = "user";
+    public static final String USER_NAME = "username";
+    public static final String AVATAR_URL = "avatar_url";
+    public static final String DOWNLOADABLE = "downloadable";
+    public static final String NEXT_HREF = "next_href";
+    public static final String COLLECTION = "collection";
+    public static final String BUNDLE_ARTWORK_URL = "BUNDLE_ARTWORK_URL";
+    public static final String EXTRAS_COLLECTION = "EXTRAS_COLLECTION";
     public static final int DURATION_1500 = 1500;
     public static final float FROM_0 = 0.0f;
     public static final float TO_360 = 360.0f;
     public static final float PIVOT_0_5 = 0.5f;
-    private static final String BASE_URL = "http://api.soundcloud.com";
-    public static final String TRACK_GENRES_URL = BASE_URL
-            + "/tracks?client_id="
-            + BuildConfig.API_KEY
-            + "&linked_partitioning=1&genres=";
+    public static final String TRACK_GENRES_URL =
+            "http://api.soundcloud.com/tracks" + CLIENT_ID + "&linked_partitioning=1&genres=";
     public static final String TRACK_SEARCH_URL =
-            BASE_URL + "/tracks?client_id=" + BuildConfig.API_KEY + "&linked_partitioning=1&q=";
-    public static final String TRENDING_TRACK_URL = BASE_URL
-            + "/tracks?client_id="
-            + BuildConfig.API_KEY
-            + "&kind=trending&limit=5&order=created_at&linked_partitioning=1";
+            "http://api.soundcloud.com/tracks" + CLIENT_ID + "&linked_partitioning=1&q=";
+    public static final String TRENDING_TRACK_URL = "http://api.soundcloud.com/tracks"
+            + CLIENT_ID + "&kind=trending&limit=5&order=created_at&linked_partitioning=1";
 
     private Constant() {
     }
