@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">IMusic</string>
     <string name="music_in_the_hearth">Music In The Hearth</string>
+    <string name="alternative_rock">Alternative Rock</string>
+    <string name="ambient">Ambient</string>
+    <string name="classical">Classical</string>
+    <string name="country">Country</string>
+    <string name="dot">&#8226;</string>
+    <string name="more">&#8230;</string>
+    <string name="network_is_unavailable">Network is unavailable</string>
 </resources>

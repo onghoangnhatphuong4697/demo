@@ -40,7 +40,6 @@ public final class Constant {
     public static final String DOWNLOADABLE = "downloadable";
     public static final String NEXT_HREF = "next_href";
     public static final String COLLECTION = "collection";
-    public static final String BUNDLE_ARTWORK_URL = "BUNDLE_ARTWORK_URL";
     public static final String EXTRAS_COLLECTION = "EXTRAS_COLLECTION";
     public static final int DURATION_1500 = 1500;
     public static final float FROM_0 = 0.0f;

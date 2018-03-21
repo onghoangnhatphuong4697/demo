@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
         tab.getIcon()
-                .setColorFilter(getResources().getColor(R.color.colorGrayTab),
+                .setColorFilter(getResources().getColor(R.color.color_gray_tab),
                         PorterDuff.Mode.SRC_IN);
     }
 
