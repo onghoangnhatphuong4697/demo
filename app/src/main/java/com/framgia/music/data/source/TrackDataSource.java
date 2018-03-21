@@ -13,6 +13,11 @@ public interface TrackDataSource {
     }
 
     interface RemoteDataSource extends TrackDataSource {
+
         void getTrendingTrackList(RequestDataCallback<Collection> callback);
+
+        void getTrackListByGenre(String genre, RequestDataCallback<Collection> callback);
+
+        void loadMoreDataTrackList(String nextHref, RequestDataCallback<Collection> callback);
     }
 }

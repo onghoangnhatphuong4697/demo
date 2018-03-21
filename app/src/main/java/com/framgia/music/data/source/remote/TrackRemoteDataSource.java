@@ -47,6 +47,38 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
         }).execute(Constant.TRENDING_TRACK_URL);
     }
 
+    @Override
+    public void getTrackListByGenre(String genre, RequestDataCallback<Collection> callback) {
+        new FetchDataFromURL(new OnFetchDataListener() {
+            @Override
+            public void onFetchDataSuccess(String data) {
+                Collection collection = parseJSON(data);
+                callback.onSuccess(collection);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                callback.onFail(e);
+            }
+        }).execute(Constant.TRACK_GENRES_URL + genre);
+    }
+
+    @Override
+    public void loadMoreDataTrackList(String nextHref, RequestDataCallback<Collection> callback) {
+        new FetchDataFromURL(new OnFetchDataListener() {
+            @Override
+            public void onFetchDataSuccess(String data) {
+                Collection collection = parseJSON(data);
+                callback.onSuccess(collection);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                callback.onFail(e);
+            }
+        }).execute(nextHref);
+    }
+
     private Collection parseJSON(String jsonString) {
         Collection collection = new Collection();
         List<Track> trackList = new ArrayList<>();

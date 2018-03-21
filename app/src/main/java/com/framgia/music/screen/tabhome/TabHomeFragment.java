@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.framgia.music.R;
+import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.model.Track;
 import com.framgia.music.data.repository.TrackRepository;
 import com.framgia.music.data.source.remote.TrackRemoteDataSource;
 import com.framgia.music.screen.BaseFragment;
+import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
+import com.framgia.music.utils.Constant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +33,8 @@ import java.util.List;
  */
 
 public class TabHomeFragment extends BaseFragment
-        implements TabHomeContract.View, ViewPager.OnPageChangeListener {
+        implements TabHomeContract.View, ViewPager.OnPageChangeListener,
+        TrackListAdapter.ItemClickListener {
 
     private static final int DELAY_3000 = 3000;
     private TabHomeContract.Presenter mPresenter;
@@ -37,6 +43,12 @@ public class TabHomeFragment extends BaseFragment
     private List<TrendingSliderFragment> mTrendingSliderFragmentList;
     private int mPagePosition = 0;
     private TextView[] mTextViewsDot;
+    private RecyclerView mRecyclerViewRock, mRecyclerViewAmbient, mRecyclerViewClassical,
+            mRecyclerViewCountry;
+    private TrackListAdapter mAdapterRock, mAdapterAmbient, mAdapterClassical, mAdapterCountry;
+    private Collection mRockCollection, mAmbientCollection, mClassicalCollection,
+            mCountryCollection;
+    private boolean isFragmentLoaded;
 
     @Nullable
     @Override
@@ -48,12 +60,16 @@ public class TabHomeFragment extends BaseFragment
                 TrackRepository.getInstance(TrackRemoteDataSource.getInstance(), null);
         mPresenter = new TabHomePresenter(trackRepository);
         mPresenter.setView(this);
-        if (isInternetConnected()) {
-            mPresenter.getTrendingTrackList();
-            onPageChanged();
-        } else {
-            Toast.makeText(getContext(), R.string.network_is_unavailable, Toast.LENGTH_SHORT)
-                    .show();
+        if (getUserVisibleHint() && !isFragmentLoaded) {
+            if (isInternetConnected()) {
+                mPresenter.getTrendingTrackList();
+                mPresenter.getTrackListByGenre(Constant.TRACK_GENRES_URL);
+                onPageChanged();
+                isFragmentLoaded = true;
+            } else {
+                Toast.makeText(getContext(), R.string.network_is_unavailable, Toast.LENGTH_SHORT)
+                        .show();
+            }
         }
         return view;
     }
@@ -72,6 +88,22 @@ public class TabHomeFragment extends BaseFragment
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && !isFragmentLoaded && isResumed()) {
+            if (isInternetConnected()) {
+                mPresenter.getTrendingTrackList();
+                mPresenter.getTrackListByGenre(Constant.TRACK_GENRES_URL);
+                onPageChanged();
+                isFragmentLoaded = true;
+            } else {
+                Toast.makeText(getContext(), R.string.network_is_unavailable, Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    @Override
     public void showSlider(List<Track> trackList) {
         mTrendingSliderFragmentList = new ArrayList<>();
         for (Track track : trackList) {
@@ -82,6 +114,126 @@ public class TabHomeFragment extends BaseFragment
         trendingTrackViewPager.addData(mTrendingSliderFragmentList);
         mViewPagerSlider.setAdapter(trendingTrackViewPager);
         addDotIntoSlider();
+    }
+
+    @Override
+    public void showAlternativeTrackList(Collection collection) {
+        mRockCollection = collection;
+        mAdapterRock = new TrackListAdapter(getContext(), this);
+        mAdapterRock.addData(collection.getTrackList());
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerViewRock.setLayoutManager(layoutManager);
+        mRecyclerViewRock.setAdapter(mAdapterRock);
+        mRecyclerViewRock.addOnScrollListener(
+                new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore() {
+                        if (isInternetConnected()) {
+                            loadNextDataFromApi(mRockCollection.getNextHref(),
+                                    Constant.Genres.ALTERNATIVEROCK);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void showAmbientTrackList(Collection collection) {
+        mAmbientCollection = collection;
+        mAdapterAmbient = new TrackListAdapter(getContext(), this);
+        mAdapterAmbient.addData(collection.getTrackList());
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerViewAmbient.setLayoutManager(layoutManager);
+        mRecyclerViewAmbient.setAdapter(mAdapterAmbient);
+        mRecyclerViewAmbient.addOnScrollListener(
+                new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore() {
+                        if (isInternetConnected()) {
+                            loadNextDataFromApi(mAmbientCollection.getNextHref(),
+                                    Constant.Genres.AMBIENT);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void showClassicalTrackList(Collection collection) {
+        mClassicalCollection = collection;
+        mAdapterClassical = new TrackListAdapter(getContext(), this);
+        mAdapterClassical.addData(collection.getTrackList());
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerViewClassical.setLayoutManager(layoutManager);
+        mRecyclerViewClassical.setAdapter(mAdapterClassical);
+        mRecyclerViewClassical.addOnScrollListener(
+                new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore() {
+                        if (isInternetConnected()) {
+                            loadNextDataFromApi(mClassicalCollection.getNextHref(),
+                                    Constant.Genres.CLASSICAL);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void showCountryTrackList(Collection collection) {
+        mCountryCollection = collection;
+        mAdapterCountry = new TrackListAdapter(getContext(), this);
+        mAdapterCountry.addData(collection.getTrackList());
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerViewCountry.setLayoutManager(layoutManager);
+        mRecyclerViewCountry.setAdapter(mAdapterCountry);
+        mRecyclerViewCountry.addOnScrollListener(
+                new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
+                    @Override
+                    public void onLoadMore() {
+                        if (isInternetConnected()) {
+                            loadNextDataFromApi(mCountryCollection.getNextHref(),
+                                    Constant.Genres.COUNTRY);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void updateTrackList(Collection collection, String genre) {
+        switch (genre) {
+            case Constant.Genres.ALTERNATIVEROCK:
+                mRockCollection.getTrackList().addAll(collection.getTrackList());
+                mRockCollection.setNextHref(collection.getNextHref());
+                mAdapterRock.addData(collection.getTrackList());
+                break;
+            case Constant.Genres.AMBIENT:
+                mAmbientCollection.getTrackList().addAll(collection.getTrackList());
+                mAmbientCollection.setNextHref(collection.getNextHref());
+                mAdapterAmbient.addData(collection.getTrackList());
+                break;
+            case Constant.Genres.CLASSICAL:
+                mClassicalCollection.getTrackList().addAll(collection.getTrackList());
+                mClassicalCollection.setNextHref(collection.getNextHref());
+                mAdapterClassical.addData(collection.getTrackList());
+                break;
+            case Constant.Genres.COUNTRY:
+                mCountryCollection.getTrackList().addAll(collection.getTrackList());
+                mCountryCollection.setNextHref(collection.getNextHref());
+                mAdapterCountry.addData(collection.getTrackList());
+                break;
+        }
+    }
+
+    @Override
+    public void showException(Exception e) {
+        //TODO
+    }
+
+    @Override
+    public void onItemClicked(Track track, int position) {
+        //TODO GO TO PLAY MUSIC SCREEN
     }
 
     @Override
@@ -100,6 +252,14 @@ public class TabHomeFragment extends BaseFragment
     }
 
     private void initViews(View view) {
+        mRockCollection = new Collection();
+        mAmbientCollection = new Collection();
+        mClassicalCollection = new Collection();
+        mCountryCollection = new Collection();
+        mRecyclerViewRock = view.findViewById(R.id.recycler_alternative_rock);
+        mRecyclerViewAmbient = view.findViewById(R.id.recycler_ambient);
+        mRecyclerViewClassical = view.findViewById(R.id.recycler_classical);
+        mRecyclerViewCountry = view.findViewById(R.id.recycler_country);
         mViewPagerSlider = view.findViewById(R.id.viewpager_slider);
         mLinearDot = view.findViewById(R.id.linear_dot);
         mViewPagerSlider.addOnPageChangeListener(this);
@@ -149,5 +309,9 @@ public class TabHomeFragment extends BaseFragment
                 handler.postDelayed(this, DELAY_3000);
             }
         }, DELAY_3000);
+    }
+
+    private void loadNextDataFromApi(String nextHref, @Constant.Genres String genre) {
+        mPresenter.loadMoreDataTrackList(nextHref, genre);
     }
 }

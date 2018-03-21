@@ -81,7 +81,12 @@ public class TrackListAdapter extends BaseRecyclerViewAdapter<TrackListAdapter.V
                     .load(track.getArtworkUrl())
                     .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
                     .into(mImageViewTrack);
-            String trackName = track.getTitle().substring(BEGIN_INDEX, END_INDEX);
+            String trackName;
+            if (track.getTitle().length() > END_INDEX) {
+                trackName = track.getTitle().substring(BEGIN_INDEX, END_INDEX);
+            } else {
+                trackName = track.getTitle();
+            }
             mTextViewTrackName.setText(trackName);
             mTextViewTrackName.append(
                     Html.fromHtml(itemView.getResources().getString(R.string.more)));
