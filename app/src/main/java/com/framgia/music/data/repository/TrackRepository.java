@@ -40,4 +40,14 @@ public final class TrackRepository
     public void getTrendingTrackList(RequestDataCallback<Collection> callback) {
         mTrackRemoteDataSource.getTrendingTrackList(callback);
     }
+
+    @Override
+    public void getTrackListByGenre(String genre, RequestDataCallback<Collection> callback) {
+        mTrackRemoteDataSource.getTrackListByGenre(genre, callback);
+    }
+
+    @Override
+    public void loadMoreDataTrackList(String nextHref, RequestDataCallback<Collection> callback) {
+        mTrackRemoteDataSource.loadMoreDataTrackList(nextHref, callback);
+    }
 }

@@ -9,6 +9,7 @@ import com.framgia.music.screen.BaseActivity;
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
 
+    private static final int OFF_SCREEN_PAGE_LIMIT = 2;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private int[] mIcons = {
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     private void showTabs() {
         MainAdapter adapter = new MainAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(OFF_SCREEN_PAGE_LIMIT);
         mTabLayout.setupWithViewPager(mViewPager);
         mTabLayout.addOnTabSelectedListener(this);
     }
