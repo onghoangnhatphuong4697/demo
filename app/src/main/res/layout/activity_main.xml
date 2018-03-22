@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frame_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
     <android.support.v4.view.ViewPager
@@ -9,13 +13,72 @@
         android:layout_height="match_parent"
         android:background="@color/color_white"
         />
-    <View
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/dp_50"
         android:background="@color/colorGray"
-        />
+        android:visibility="gone"
+        >
+        <LinearLayout
+            android:id="@+id/linear_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="6"
+            >
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/sp_14"
+
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sp_13"
+                    />
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/image_previous"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_skip_previous_black_36dp"
+                tools:ignore="ContentDescription"
+                />
+            <ImageButton
+                android:id="@+id/image_play"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_play_arrow_black_36dp"
+                tools:ignore="ContentDescription"
+                />
+            <ImageButton
+                android:id="@+id/image_next"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_skip_next_black_36dp"
+                tools:ignore="ContentDescription"
+                />
+        </LinearLayout>
+    </android.support.v7.widget.Toolbar>
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
@@ -26,4 +89,4 @@
         app:tabMode="fixed"
         />
 
-</merge>
+</FrameLayout>

@@ -41,6 +41,8 @@ public final class Constant {
     public static final String NEXT_HREF = "next_href";
     public static final String COLLECTION = "collection";
     public static final String EXTRAS_COLLECTION = "EXTRAS_COLLECTION";
+    public static final String POSITION = "position";
+    public static final String TAG_PLAY_FRAGMENT = "tag_play_fragment";
     public static final int DURATION_1500 = 1500;
     public static final float FROM_0 = 0.0f;
     public static final float TO_360 = 360.0f;

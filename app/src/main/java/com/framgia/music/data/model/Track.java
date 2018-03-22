@@ -11,42 +11,34 @@ public class Track implements Parcelable {
 
     private Integer mId;
     private String mKind;
-    private String mCreateAt;
-    private String mTitle;
-    private Integer mDuration;
-    private String mStreamUrl;
     private String mUri;
     private Integer mUserId;
+    private String mGenre;
+    private String mTitle;
+    private String mStreamUrl;
     private String mArtworkUrl;
     private Boolean mDownloadable;
-    private String mGenre;
     private Artist mArtist;
-    private String mVideoUrl;
-    private Object mDownloadUrl;
 
-    public Track() {}
+    public Track() {
+    }
 
     private Track(Parcel in) {
         if (in.readByte() != 0) {
             mId = in.readInt();
         }
         mKind = in.readString();
-        mCreateAt = in.readString();
-        mTitle = in.readString();
-        if (in.readByte() != 0) {
-            mDuration = in.readInt();
-        }
-        mStreamUrl = in.readString();
         mUri = in.readString();
         if (in.readByte() != 0) {
             mUserId = in.readInt();
         }
+        mGenre = in.readString();
+        mTitle = in.readString();
+        mStreamUrl = in.readString();
         mArtworkUrl = in.readString();
         byte tmpMDownloadable = in.readByte();
         mDownloadable = tmpMDownloadable == 0 ? null : tmpMDownloadable == 1;
-        mGenre = in.readString();
         mArtist = in.readParcelable(Artist.class.getClassLoader());
-        mVideoUrl = in.readString();
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -73,23 +65,17 @@ public class Track implements Parcelable {
             parcel.writeInt(mId);
         }
         parcel.writeString(mKind);
-        parcel.writeString(mCreateAt);
-        parcel.writeString(mTitle);
-        if (mDuration != null) {
-            parcel.writeByte((byte) 1);
-            parcel.writeInt(mDuration);
-        }
-        parcel.writeString(mStreamUrl);
         parcel.writeString(mUri);
         if (mUserId != null) {
             parcel.writeByte((byte) 1);
             parcel.writeInt(mUserId);
         }
+        parcel.writeString(mGenre);
+        parcel.writeString(mTitle);
+        parcel.writeString(mStreamUrl);
         parcel.writeString(mArtworkUrl);
         parcel.writeByte((byte) (mDownloadable == null ? 0 : mDownloadable ? 1 : 2));
-        parcel.writeString(mGenre);
         parcel.writeParcelable(mArtist, i);
-        parcel.writeString(mVideoUrl);
     }
 
     public Integer getId() {
@@ -108,28 +94,12 @@ public class Track implements Parcelable {
         mKind = kind;
     }
 
-    public String getCreateAt() {
-        return mCreateAt;
-    }
-
-    public void setCreateAt(String createAt) {
-        mCreateAt = createAt;
-    }
-
     public String getTitle() {
         return mTitle;
     }
 
     public void setTitle(String title) {
         mTitle = title;
-    }
-
-    public Integer getDuration() {
-        return mDuration;
-    }
-
-    public void setDuration(Integer duration) {
-        mDuration = duration;
     }
 
     public String getStreamUrl() {
@@ -186,22 +156,6 @@ public class Track implements Parcelable {
 
     public void setUser(Artist artist) {
         mArtist = artist;
-    }
-
-    public String getVideoUrl() {
-        return mVideoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        mVideoUrl = videoUrl;
-    }
-
-    public Object getDownloadUrl() {
-        return mDownloadUrl;
-    }
-
-    public void setDownloadUrl(Object downloadUrl) {
-        mDownloadUrl = downloadUrl;
     }
 
     public static Creator<Track> getCREATOR() {
