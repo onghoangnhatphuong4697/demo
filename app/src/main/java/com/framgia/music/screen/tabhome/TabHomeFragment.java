@@ -1,8 +1,5 @@
 package com.framgia.music.screen.tabhome;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -28,6 +25,7 @@ import com.framgia.music.screen.BaseFragment;
 import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
 import com.framgia.music.screen.playmusicscreen.PlayMusicFragment;
 import com.framgia.music.utils.Constant;
+import com.framgia.music.utils.common.ConnectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +62,7 @@ public class TabHomeFragment extends BaseFragment
         mPresenter = new TabHomePresenter(trackRepository);
         mPresenter.setView(this);
         if (getUserVisibleHint() && !isFragmentLoaded) {
-            if (isInternetConnected()) {
+            if (ConnectionUtils.isInternetConnected(getContext())) {
                 mPresenter.getTrendingTrackList();
                 mPresenter.getTrackListByGenre(Constant.TRACK_GENRES_URL);
                 onPageChanged();
@@ -94,7 +92,7 @@ public class TabHomeFragment extends BaseFragment
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && !isFragmentLoaded && isResumed()) {
-            if (isInternetConnected()) {
+            if (ConnectionUtils.isInternetConnected(getContext())) {
                 mPresenter.getTrendingTrackList();
                 mPresenter.getTrackListByGenre(Constant.TRACK_GENRES_URL);
                 onPageChanged();
@@ -132,7 +130,7 @@ public class TabHomeFragment extends BaseFragment
                 new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
                     @Override
                     public void onLoadMore() {
-                        if (isInternetConnected()) {
+                        if (ConnectionUtils.isInternetConnected(getContext())) {
                             loadNextDataFromApi(mRockCollection.getNextHref(),
                                     Constant.Genres.ALTERNATIVEROCK);
                         }
@@ -153,7 +151,7 @@ public class TabHomeFragment extends BaseFragment
                 new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
                     @Override
                     public void onLoadMore() {
-                        if (isInternetConnected()) {
+                        if (ConnectionUtils.isInternetConnected(getContext())) {
                             loadNextDataFromApi(mAmbientCollection.getNextHref(),
                                     Constant.Genres.AMBIENT);
                         }
@@ -174,7 +172,7 @@ public class TabHomeFragment extends BaseFragment
                 new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
                     @Override
                     public void onLoadMore() {
-                        if (isInternetConnected()) {
+                        if (ConnectionUtils.isInternetConnected(getContext())) {
                             loadNextDataFromApi(mClassicalCollection.getNextHref(),
                                     Constant.Genres.CLASSICAL);
                         }
@@ -195,7 +193,7 @@ public class TabHomeFragment extends BaseFragment
                 new EndlessRecyclerViewScrollListener((LinearLayoutManager) layoutManager) {
                     @Override
                     public void onLoadMore() {
-                        if (isInternetConnected()) {
+                        if (ConnectionUtils.isInternetConnected(getContext())) {
                             loadNextDataFromApi(mCountryCollection.getNextHref(),
                                     Constant.Genres.COUNTRY);
                         }
@@ -230,7 +228,7 @@ public class TabHomeFragment extends BaseFragment
     }
 
     @Override
-    public void showException(Exception e) {
+    public void onError(Exception e) {
         //TODO
     }
 
@@ -285,13 +283,6 @@ public class TabHomeFragment extends BaseFragment
         mViewPagerSlider = view.findViewById(R.id.viewpager_slider);
         mLinearDot = view.findViewById(R.id.linear_dot);
         mViewPagerSlider.addOnPageChangeListener(this);
-    }
-
-    private boolean isInternetConnected() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
     }
 
     private void updatePagePosition(int position) {

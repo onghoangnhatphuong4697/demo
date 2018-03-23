@@ -25,7 +25,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
     @Override
     public void onStart() {
-
+        
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
             @Override
             public void onFail(Exception e) {
-                mView.showException(e);
+                mView.onError(e);
             }
         });
     }
@@ -59,7 +59,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
                     @Override
                     public void onFail(Exception e) {
-                        mView.showException(e);
+                        mView.onError(e);
                     }
                 });
 
@@ -72,7 +72,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
                     @Override
                     public void onFail(Exception e) {
-                        mView.showException(e);
+                        mView.onError(e);
                     }
                 });
 
@@ -85,7 +85,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
                     @Override
                     public void onFail(Exception e) {
-                        mView.showException(e);
+                        mView.onError(e);
                     }
                 });
 
@@ -98,7 +98,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
                     @Override
                     public void onFail(Exception e) {
-                        mView.showException(e);
+                        mView.onError(e);
                     }
                 });
     }
@@ -113,7 +113,7 @@ public class TabHomePresenter implements TabHomeContract.Presenter {
 
             @Override
             public void onFail(Exception e) {
-                mView.showException(e);
+                mView.onError(e);
             }
         });
     }
