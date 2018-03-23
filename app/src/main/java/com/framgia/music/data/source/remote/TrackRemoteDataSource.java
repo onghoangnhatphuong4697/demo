@@ -89,8 +89,8 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
             for (int i = 0; i < count; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 Track track = new Track();
-                track.setKind(jsonObject.getString(Constant.KIND));
                 track.setId(jsonObject.getInt(Constant.ID));
+                track.setKind(jsonObject.getString(Constant.KIND));
                 track.setUri(jsonObject.getString(Constant.URI));
                 track.setUserId(jsonObject.getInt(Constant.USER_ID));
                 track.setGenre(jsonObject.getString(Constant.GENRE));
@@ -100,9 +100,9 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
                 track.setDownloadable(jsonObject.getBoolean(Constant.DOWNLOADABLE));
                 JSONObject userJsonObject = jsonObject.getJSONObject(Constant.USER);
                 Artist artist = new Artist();
+                artist.setAvatarUrl(userJsonObject.getString(Constant.AVATAR_URL));
                 artist.setId(userJsonObject.getInt(Constant.ID));
                 artist.setUsername(userJsonObject.getString(Constant.USER_NAME));
-                artist.setAvatarUrl(userJsonObject.getString(Constant.AVATAR_URL));
                 track.setUser(artist);
                 trackList.add(track);
             }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,7 @@ import com.framgia.music.data.repository.TrackRepository;
 import com.framgia.music.data.source.remote.TrackRemoteDataSource;
 import com.framgia.music.screen.BaseFragment;
 import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
+import com.framgia.music.screen.playmusicscreen.PlayMusicFragment;
 import com.framgia.music.utils.Constant;
 import java.util.ArrayList;
 import java.util.List;
@@ -233,7 +236,26 @@ public class TabHomeFragment extends BaseFragment
 
     @Override
     public void onItemClicked(Track track, int position) {
-        //TODO GO TO PLAY MUSIC SCREEN
+
+        Collection collection;
+        if (track.getGenre().equalsIgnoreCase(Constant.Genres.ALTERNATIVEROCK)) {
+            collection = mRockCollection;
+        } else if (track.getGenre().equalsIgnoreCase(Constant.Genres.AMBIENT)) {
+            collection = mAmbientCollection;
+        } else if (track.getGenre().equalsIgnoreCase(Constant.Genres.CLASSICAL)) {
+            collection = mClassicalCollection;
+        } else {
+            collection = mCountryCollection;
+        }
+
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentManager.popBackStack();
+
+        fragmentTransaction.replace(R.id.frame_layout,
+                PlayMusicFragment.newInstance(collection, position), Constant.TAG_PLAY_FRAGMENT);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -248,7 +270,7 @@ public class TabHomeFragment extends BaseFragment
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        //TODO
+        //No-op
     }
 
     private void initViews(View view) {

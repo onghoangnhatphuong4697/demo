@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/color_white</item>
     </style>
 
+    <style name="LinearLayout">
+        <item name="android:background">@color/color_black</item>
+    </style>
+
 </resources>

@@ -17,4 +17,7 @@
     <dimen name="sp_11">11sp</dimen>
     <dimen name="sp_13">13sp</dimen>
     <dimen name="dp_110">110dp</dimen>
+    <dimen name="dp_300">300dp</dimen>
+    <dimen name="sp_20">20sp</dimen>
+    <dimen name="sp_14">14sp</dimen>
 </resources>
