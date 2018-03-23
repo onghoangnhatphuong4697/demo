@@ -26,7 +26,7 @@ public interface TabHomeContract {
 
         void updateTrackList(Collection collection, @Constant.Genres String genre);
 
-        void showException(Exception e);
+        void onError(Exception e);
     }
 
     interface Presenter extends BasePresenter<View> {
