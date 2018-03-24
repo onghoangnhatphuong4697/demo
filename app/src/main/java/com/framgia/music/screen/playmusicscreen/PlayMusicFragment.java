@@ -8,12 +8,18 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
@@ -27,6 +33,7 @@ import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
 import com.framgia.music.service.PlayMusicService;
 import com.framgia.music.utils.Constant;
 import com.framgia.music.utils.common.ConnectionUtils;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
@@ -39,15 +46,19 @@ public class PlayMusicFragment extends BaseFragment
         SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
     private static final String ARGUMENT_COLLECTION = "BUNDLE_ARGUMENT_COLLECTION";
+    private static final int DURATION_15000 = 15000;
     private static final int POSITION_0 = 0;
     private static final int MAX_100 = 100;
     private static final int DELAY_TIME_100 = 100;
     private static final String ZERO = "0:00";
+    private ServiceConnection mServiceConnection;
     private RecyclerView.LayoutManager mLayoutManager;
     private TextView mTextViewTrackName, mTextViewUserName, mTextViewTrackProgress,
-            mTextViewAllTime;
+            mTextViewAllTime, mTextTrackNameParentActivity, mTextUserNameParentActivity;
     private ImageView mImageViewPrevious, mImageViewPlay, mImageViewNext, mImageViewAdapt,
-            mImageViewDownLoad, mImageViewArt;
+            mImageViewDownLoad, mImageViewPreviousParentActivity, mImageViewNextParentActivity,
+            mImageViewPlayParentActivity;
+    private CircleImageView mImageViewArt, mImageViewArtParentActivity;
     private SeekBar mSeekBarProgress;
     private PlayMusicConTract.Presenter mPresenter;
     private RecyclerView mRecyclerViewGenre;
@@ -57,7 +68,7 @@ public class PlayMusicFragment extends BaseFragment
     private Handler mHandler = new Handler();
     private Utilities mUtilities;
     private PlayMusicService mPlayMusicService;
-    private static ServiceConnection mServiceConnection;
+    private LinearLayout mLinearBottomParentActivity;
 
     public static PlayMusicFragment newInstance(Collection collection, int position) {
         PlayMusicFragment fragment = new PlayMusicFragment();
@@ -134,16 +145,27 @@ public class PlayMusicFragment extends BaseFragment
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.linear_bottom:
+                showFragment();
+                break;
             case R.id.image_play:
                 if (mPlayMusicService.isPlaying()) {
                     mPlayMusicService.pauseMedia();
                     mImageViewPlay.setImageDrawable(
                             getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                    mImageViewPlayParentActivity.setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_play_arrow_black_36dp));
+                    mImageViewArt.clearAnimation();
+                    mImageViewArt.clearAnimation();
                 } else {
                     mPlayMusicService.playMedia();
                     mImageViewPlay.setImageDrawable(
                             getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                    mImageViewPlayParentActivity.setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_pause_black_36dp));
                     updateProgressBar();
+                    mImageViewArt.startAnimation(addAnimation());
+                    mImageViewArtParentActivity.startAnimation(addAnimation());
                 }
                 break;
             case R.id.image_next:
@@ -166,6 +188,13 @@ public class PlayMusicFragment extends BaseFragment
     }
 
     private void initViews(View view) {
+        mLinearBottomParentActivity = getActivity().findViewById(R.id.linear_bottom);
+        mTextTrackNameParentActivity = getActivity().findViewById(R.id.text_track_name_parent);
+        mTextUserNameParentActivity = getActivity().findViewById(R.id.text_user_name);
+        mImageViewPreviousParentActivity = getActivity().findViewById(R.id.image_previous);
+        mImageViewArtParentActivity = getActivity().findViewById(R.id.image_track_parent);
+        mImageViewNextParentActivity = getActivity().findViewById(R.id.image_next);
+        mImageViewPlayParentActivity = getActivity().findViewById(R.id.image_play);
         mRecyclerViewGenre = view.findViewById(R.id.recycler_genre);
         mTextViewTrackName = view.findViewById(R.id.text_track_name);
         mTextViewUserName = view.findViewById(R.id.text_user_name);
@@ -184,6 +213,11 @@ public class PlayMusicFragment extends BaseFragment
         mImageViewPrevious.setOnClickListener(this);
         mSeekBarProgress.setOnSeekBarChangeListener(this);
         mImageViewAdapt.setOnClickListener(this);
+        mLinearBottomParentActivity.setOnClickListener(this);
+        mImageViewPreviousParentActivity.setOnClickListener(this);
+        mImageViewPlayParentActivity.setOnClickListener(this);
+        mImageViewNextParentActivity.setOnClickListener(this);
+        mLinearBottomParentActivity.setVisibility(View.VISIBLE);
         mUtilities = new Utilities();
     }
 
@@ -258,18 +292,39 @@ public class PlayMusicFragment extends BaseFragment
     }
 
     private void setupViews() {
-
+        Glide.with(getActivity())
+                .load(mPlayMusicService.getArt())
+                .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
+                .into(mImageViewArtParentActivity);
         Glide.with(this)
                 .load(mPlayMusicService.getArt())
                 .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
                 .into(mImageViewArt);
+        mImageViewArtParentActivity.startAnimation(addAnimation());
+        mImageViewArt.startAnimation(addAnimation());
         mTextViewUserName.setText(mPlayMusicService.getUserName());
         mTextViewTrackName.setText(mPlayMusicService.getSongName());
+        mTextUserNameParentActivity.setText(mPlayMusicService.getUserName());
+        mTextTrackNameParentActivity.setText(mPlayMusicService.getSongName());
         mTextViewAllTime.setText(ZERO);
         mImageViewPlay.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+        mImageViewPlayParentActivity.setImageDrawable(
+                getResources().getDrawable(R.drawable.ic_pause_black_36dp));
         mSeekBarProgress.setMax(MAX_100);
         mSeekBarProgress.setProgress(POSITION_0);
         updateProgressBar();
+    }
+
+    private AnimationSet addAnimation() {
+        AnimationSet animationSet = new AnimationSet(true);
+        RotateAnimation rotateAnimation =
+                new RotateAnimation(Constant.FROM_0, Constant.TO_360, Animation.RELATIVE_TO_SELF,
+                        Constant.PIVOT_0_5, Animation.RELATIVE_TO_SELF, Constant.PIVOT_0_5);
+        rotateAnimation.setDuration(DURATION_15000);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        rotateAnimation.setFillAfter(true);
+        animationSet.addAnimation(rotateAnimation);
+        return animationSet;
     }
 
     private void loadNextDataFromApi(String nextHref) {
@@ -288,5 +343,18 @@ public class PlayMusicFragment extends BaseFragment
         mPlayMusicService.initMediaPlayer();
         showTrackList();
         setupViews();
+    }
+
+    private void showFragment() {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down,
+                R.anim.slide_out_down, R.anim.slide_out_up);
+        PlayMusicFragment playMusicFragment =
+                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
+        if (playMusicFragment != null && playMusicFragment.isHidden()) {
+            fragmentTransaction.show(playMusicFragment);
+            fragmentTransaction.commit();
+        }
     }
 }

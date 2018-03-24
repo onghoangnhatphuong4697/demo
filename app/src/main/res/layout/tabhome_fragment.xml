@@ -166,6 +166,7 @@
             android:id="@+id/recycler_country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_110"
             />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
