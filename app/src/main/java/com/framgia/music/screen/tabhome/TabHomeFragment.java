@@ -254,12 +254,12 @@ public class TabHomeFragment extends BaseFragment
                 (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
         if (playMusicFragment == null) {
             fragmentTransaction.replace(R.id.frame_layout,
-                    PlayMusicFragment.newInstance(collection, position),
+                    PlayMusicFragment.newInstance(collection, position, false),
                     Constant.TAG_PLAY_FRAGMENT);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         } else {
-            playMusicFragment.refreshData(collection, position);
+            playMusicFragment.refreshData(collection, position, false);
             fragmentTransaction.show(playMusicFragment);
             fragmentTransaction.commit();
         }

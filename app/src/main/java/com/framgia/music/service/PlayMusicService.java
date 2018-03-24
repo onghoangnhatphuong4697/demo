@@ -3,6 +3,7 @@ package com.framgia.music.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -14,6 +15,7 @@ import com.framgia.music.data.model.Track;
 import com.framgia.music.utils.Constant;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Admin on 3/23/2018.
@@ -21,22 +23,19 @@ import java.util.List;
 
 public class PlayMusicService extends Service implements MediaPlayer.OnPreparedListener {
 
-    public static Intent getTracksIntent(Context context, Collection collection, int position) {
-        Intent intent = new Intent(context, PlayMusicService.class);
-        intent.putExtra(Constant.EXTRAS_COLLECTION, collection);
-        intent.putExtra(Constant.POSITION, position);
-        return intent;
-    }
-
     private static final String TAG = "Exception";
     private MediaPlayer mMediaPlayer;
     private IBinder mIBinder = new LocalBinder();
     private int mTrackIndex;
     private List<Track> mTrackList;
     private Collection mCollection;
+    private boolean isShuffle, isRepeat, isRepeatOne, isNonRepeat;
+    private String mSetup;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     public void onCreate() {
+        getDataFromSharedPreferences();
         super.onCreate();
     }
 
@@ -69,6 +68,13 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
             mMediaPlayer.release();
         }
         super.onDestroy();
+    }
+
+    public static Intent getTracksIntent(Context context, Collection collection, int position) {
+        Intent intent = new Intent(context, PlayMusicService.class);
+        intent.putExtra(Constant.EXTRAS_COLLECTION, collection);
+        intent.putExtra(Constant.POSITION, position);
+        return intent;
     }
 
     public class LocalBinder extends Binder {
@@ -159,17 +165,87 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         initMediaPlayer();
     }
 
-    public void nextTrack() {
-
-        if (mTrackIndex == mTrackList.size() - 1) {
-            mTrackIndex = 0;
-        } else {
-            mTrackIndex++;
+    public void nextTrack(boolean controlByHand) {
+        if (!controlByHand) { // no action by user
+            if (isShuffle) {
+                Random rand = new Random();
+                mTrackIndex = rand.nextInt(mTrackList.size());
+            } else if (isRepeat) {
+                if (mTrackIndex == mTrackList.size() - 1) {
+                    mTrackIndex = 0;
+                } else {
+                    mTrackIndex++;
+                }
+            }
+            if (isNonRepeat) {
+                if (mTrackIndex == mTrackList.size() - 1) {
+                    return;
+                } else {
+                    mTrackIndex++;
+                }
+            }
+        } else { // action by user
+            if (mTrackIndex == mTrackList.size() - 1) {
+                mTrackIndex = 0;
+            } else {
+                mTrackIndex++;
+            }
         }
-
         stopMedia();
         mMediaPlayer.reset();
         initMediaPlayer();
+    }
+
+    public void setupMusic() {
+        if (isRepeat) {
+            isRepeatOne = true;
+            isShuffle = false;
+            isNonRepeat = false;
+            isRepeat = false;
+            mSetup = Constant.REPEAT_ONE;
+        } else if (isRepeatOne) {
+            isShuffle = true;
+            isNonRepeat = false;
+            isRepeat = false;
+            isRepeatOne = false;
+            mSetup = Constant.SHUFFLE;
+        } else if (isShuffle) {
+            isNonRepeat = true;
+            isRepeatOne = false;
+            isRepeat = false;
+            isShuffle = false;
+            mSetup = Constant.NON_REPEAT;
+        } else if (isNonRepeat) {
+            isRepeat = true;
+            isNonRepeat = false;
+            isShuffle = false;
+            isRepeatOne = false;
+            mSetup = Constant.REPEAT;
+        }
+        setupPreferences();
+    }
+
+    public String getSetup() {
+        return mSetup;
+    }
+
+    private void setupPreferences() {
+        mSharedPreferences = getSharedPreferences(Constant.SETUP_MUSIC_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constant.SHUFFLE, isShuffle);
+        editor.putBoolean(Constant.REPEAT, isRepeat);
+        editor.putBoolean(Constant.REPEAT_ONE, isRepeatOne);
+        editor.putBoolean(Constant.NON_REPEAT, isNonRepeat);
+        editor.putString(Constant.SETUP, mSetup);
+        editor.apply();
+    }
+
+    private void getDataFromSharedPreferences() {
+        mSharedPreferences = getSharedPreferences(Constant.SETUP_MUSIC_PREFERENCES, MODE_PRIVATE);
+        isRepeat = mSharedPreferences.getBoolean(Constant.REPEAT, false);
+        isRepeatOne = mSharedPreferences.getBoolean(Constant.REPEAT_ONE, false);
+        isShuffle = mSharedPreferences.getBoolean(Constant.SHUFFLE, false);
+        isNonRepeat = mSharedPreferences.getBoolean(Constant.NON_REPEAT, true);
     }
 
     public void updateTrackList(List<Track> trackList) {

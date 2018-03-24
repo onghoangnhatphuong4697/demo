@@ -1,8 +1,10 @@
 package com.framgia.music.screen.splashscreen;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -11,10 +13,12 @@ import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.framgia.music.R;
 import com.framgia.music.screen.BaseActivity;
 import com.framgia.music.screen.main.MainActivity;
 import com.framgia.music.utils.Constant;
+import com.framgia.music.utils.common.PermissionUtils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -34,8 +38,10 @@ public class SplashScreenActivity extends BaseActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_activity);
-        initViews();
-        handles();
+        if (PermissionUtils.requestPermission(this)) {
+            initViews();
+            handles();
+        }
     }
 
     private void initViews() {
@@ -71,5 +77,24 @@ public class SplashScreenActivity extends BaseActivity {
             startActivity(intent);
             finish();
         }, DELAY_2900);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Constant.REQUEST_WRITE_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, R.string.granted, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, R.string.no_granted, Toast.LENGTH_SHORT).show();
+                }
+                initViews();
+                handles();
+                return;
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

@@ -53,6 +53,13 @@ public final class Constant {
             "http://api.soundcloud.com/tracks" + CLIENT_ID + "&linked_partitioning=1&q=";
     public static final String TRENDING_TRACK_URL = "http://api.soundcloud.com/tracks"
             + CLIENT_ID + "&kind=trending&limit=5&order=created_at&linked_partitioning=1";
+    public static final String SHUFFLE = "shuffle";
+    public static final String REPEAT = "repeat";
+    public static final String REPEAT_ONE = "repeat_one";
+    public static final String NON_REPEAT = "non_repeat";
+    public static final String SETUP = "setup";
+    public static final String SETUP_MUSIC_PREFERENCES = "setup_music_preferences";
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     private Constant() {
     }

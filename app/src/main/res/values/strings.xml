@@ -9,4 +9,6 @@
     <string name="more">&#8230;</string>
     <string name="network_is_unavailable">Network is unavailable</string>
     <string name="Please_press_Back_again_to_exit">Please press Back again to exit</string>
+    <string name="granted">Granted</string>
+    <string name="no_granted">No Granted</string>
 </resources>

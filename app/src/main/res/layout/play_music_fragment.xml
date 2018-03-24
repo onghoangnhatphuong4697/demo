@@ -72,7 +72,7 @@
         android:weightSum="5"
         >
         <ImageButton
-            android:id="@+id/image_adapt"
+            android:id="@+id/image_setup"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
