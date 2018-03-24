@@ -9,4 +9,5 @@
     <color name="color_white_orange">#ead4bd</color>
     <color name="color_black">#000</color>
     <color name="color_slider_in_active">#dcded8</color>
+    <color name="color_grayish">#EEEEEE</color>
 </resources>
