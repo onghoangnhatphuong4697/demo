@@ -67,6 +67,12 @@ public class PlayMusicAdapter extends BaseRecyclerViewAdapter<PlayMusicAdapter.V
         mGlobalIndex = position;
     }
 
+    void clearData() {
+        if (mTrackList != null) {
+            mTrackList.clear();
+        }
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mTextViewTrackTitle, mTextViewUserName;
 

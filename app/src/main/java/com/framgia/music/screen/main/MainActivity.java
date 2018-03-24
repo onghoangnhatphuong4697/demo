@@ -2,13 +2,20 @@ package com.framgia.music.screen.main;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 import com.framgia.music.R;
 import com.framgia.music.screen.BaseActivity;
+import com.framgia.music.screen.playmusicscreen.PlayMusicFragment;
+import com.framgia.music.utils.Constant;
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
 
+    private static final int DELAY_TIME_2000 = 2000;
     private static final int OFF_SCREEN_PAGE_LIMIT = 2;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -16,6 +23,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             R.drawable.ic_home_grey_700_24dp, R.drawable.ic_search_grey_700_24dp,
             R.drawable.ic_file_download_grey_700_24dp
     };
+    private boolean doubleBackToExitPressedOnce;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,5 +77,33 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 .getIcon()
                 .setColorFilter(getResources().getColor(R.color.colorAccent),
                         PorterDuff.Mode.SRC_IN);
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        PlayMusicFragment playMusicFragment =
+                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
+        if (playMusicFragment != null && !playMusicFragment.isHidden()) {
+            fragmentTransaction.hide(playMusicFragment);
+            fragmentTransaction.commit();
+            return;
+        }
+        if (doubleBackToExitPressedOnce) {
+            moveTaskToBack(true);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.Please_press_Back_again_to_exit, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, DELAY_TIME_2000);
     }
 }

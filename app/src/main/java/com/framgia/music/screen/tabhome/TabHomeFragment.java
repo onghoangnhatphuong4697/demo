@@ -248,12 +248,19 @@ public class TabHomeFragment extends BaseFragment
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentManager.popBackStack();
-
-        fragmentTransaction.replace(R.id.frame_layout,
-                PlayMusicFragment.newInstance(collection, position), Constant.TAG_PLAY_FRAGMENT);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        PlayMusicFragment playMusicFragment =
+                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
+        if (playMusicFragment == null) {
+            fragmentTransaction.replace(R.id.frame_layout,
+                    PlayMusicFragment.newInstance(collection, position),
+                    Constant.TAG_PLAY_FRAGMENT);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        } else {
+            playMusicFragment.refreshData(collection, position);
+            fragmentTransaction.show(playMusicFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
