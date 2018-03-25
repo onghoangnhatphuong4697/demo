@@ -59,6 +59,7 @@ public final class Constant {
     public static final String NON_REPEAT = "non_repeat";
     public static final String SETUP = "setup";
     public static final String SETUP_MUSIC_PREFERENCES = "setup_music_preferences";
+    public static final String ISLOCALTRACK = "isLocalTrack";
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     private Constant() {

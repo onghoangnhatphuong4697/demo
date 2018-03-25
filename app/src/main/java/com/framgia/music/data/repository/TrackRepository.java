@@ -1,5 +1,6 @@
 package com.framgia.music.data.repository;
 
+import android.content.Context;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.source.RequestDataCallback;
 import com.framgia.music.data.source.TrackDataSource;
@@ -50,4 +51,11 @@ public final class TrackRepository
     public void loadMoreDataTrackList(String nextHref, RequestDataCallback<Collection> callback) {
         mTrackRemoteDataSource.loadMoreDataTrackList(nextHref, callback);
     }
+
+    @Override
+    public void downloadTrack(Context context, String url, String fileName,
+            RequestDataCallback<String> callback) {
+        mTrackRemoteDataSource.downloadTrack(context, url, fileName, callback);
+    }
+
 }

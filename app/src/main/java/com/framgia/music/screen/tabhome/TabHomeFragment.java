@@ -248,8 +248,8 @@ public class TabHomeFragment extends BaseFragment
 
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down, R.anim
-                .slide_out_down, R.anim.slide_out_up);
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down,
+                R.anim.slide_out_down, R.anim.slide_out_up);
         PlayMusicFragment playMusicFragment =
                 (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
         if (playMusicFragment == null) {

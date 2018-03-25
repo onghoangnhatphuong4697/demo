@@ -32,6 +32,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     private boolean isShuffle, isRepeat, isRepeatOne, isNonRepeat;
     private String mSetup;
     private SharedPreferences mSharedPreferences;
+    private boolean isLocalTrack;
 
     @Override
     public void onCreate() {
@@ -43,6 +44,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     public int onStartCommand(Intent intent, int flags, int startId) {
         mCollection = intent.getParcelableExtra(Constant.EXTRAS_COLLECTION);
         mTrackIndex = intent.getIntExtra(Constant.POSITION, -1);
+        isLocalTrack = intent.getBooleanExtra(Constant.ISLOCALTRACK, false);
         if (mCollection != null && mTrackIndex != -1) {
             mTrackList = mCollection.getTrackList();
             initMediaPlayer();
@@ -70,10 +72,12 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         super.onDestroy();
     }
 
-    public static Intent getTracksIntent(Context context, Collection collection, int position) {
+    public static Intent getTracksIntent(Context context, Collection collection, int position,
+            boolean localTrack) {
         Intent intent = new Intent(context, PlayMusicService.class);
         intent.putExtra(Constant.EXTRAS_COLLECTION, collection);
         intent.putExtra(Constant.POSITION, position);
+        intent.putExtra(Constant.ISLOCALTRACK, localTrack);
         return intent;
     }
 
@@ -90,8 +94,12 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         mMediaPlayer.reset();
 
         try {
-            mMediaPlayer.setDataSource(
-                    mTrackList.get(mTrackIndex).getStreamUrl() + Constant.CLIENT_ID);
+            if (isLocalTrack) {
+                mMediaPlayer.setDataSource(mTrackList.get(mTrackIndex).getStreamUrl());
+            } else {
+                mMediaPlayer.setDataSource(
+                        mTrackList.get(mTrackIndex).getStreamUrl() + Constant.CLIENT_ID);
+            }
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
