@@ -1,6 +1,7 @@
 package com.framgia.music.screen.playmusicscreen;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -55,7 +56,7 @@ public class PlayMusicFragment extends BaseFragment
     private RecyclerView.LayoutManager mLayoutManager;
     private TextView mTextViewTrackName, mTextViewUserName, mTextViewTrackProgress,
             mTextViewAllTime, mTextTrackNameParentActivity, mTextUserNameParentActivity;
-    private ImageView mImageViewPrevious, mImageViewPlay, mImageViewNext, mImageViewAdapt,
+    private ImageView mImageViewPrevious, mImageViewPlay, mImageViewNext, mImageViewSetup,
             mImageViewDownLoad, mImageViewPreviousParentActivity, mImageViewNextParentActivity,
             mImageViewPlayParentActivity;
     private CircleImageView mImageViewArt, mImageViewArtParentActivity;
@@ -69,8 +70,11 @@ public class PlayMusicFragment extends BaseFragment
     private Utilities mUtilities;
     private PlayMusicService mPlayMusicService;
     private LinearLayout mLinearBottomParentActivity;
+    private String mSetup;
+    private boolean lastNonTrack;
 
-    public static PlayMusicFragment newInstance(Collection collection, int position) {
+    public static PlayMusicFragment newInstance(Collection collection, int position,
+            boolean isLocalTrack) {
         PlayMusicFragment fragment = new PlayMusicFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_COLLECTION, collection);
@@ -149,14 +153,21 @@ public class PlayMusicFragment extends BaseFragment
                 showFragment();
                 break;
             case R.id.image_play:
-                if (mPlayMusicService.isPlaying()) {
+                if (lastNonTrack) {
+                    mPlayMusicService.playTrack(mTrackIndex);
+                    mImageViewPlay.setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                    mImageViewArtParentActivity.setImageDrawable(
+                            getResources().getDrawable(R.drawable.ic_pause_black_36dp));
+                    updateProgressBar();
+                } else if (mPlayMusicService.isPlaying()) {
                     mPlayMusicService.pauseMedia();
                     mImageViewPlay.setImageDrawable(
                             getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
                     mImageViewPlayParentActivity.setImageDrawable(
                             getResources().getDrawable(R.drawable.ic_play_arrow_black_36dp));
                     mImageViewArt.clearAnimation();
-                    mImageViewArt.clearAnimation();
+                    mImageViewArtParentActivity.clearAnimation();
                 } else {
                     mPlayMusicService.playMedia();
                     mImageViewPlay.setImageDrawable(
@@ -169,7 +180,7 @@ public class PlayMusicFragment extends BaseFragment
                 }
                 break;
             case R.id.image_next:
-                mPlayMusicService.nextTrack();
+                mPlayMusicService.nextTrack(false);
                 setupViews();
                 mTrackIndex = mPlayMusicService.getTrackIndex();
                 mMusicAdapter.addPosition(mTrackIndex);
@@ -182,6 +193,9 @@ public class PlayMusicFragment extends BaseFragment
                 mMusicAdapter.addPosition(mTrackIndex);
                 mMusicAdapter.notifyItemRangeChanged(POSITION_0, mMusicAdapter.getItemCount());
                 break;
+            case R.id.image_setup:
+                mPlayMusicService.setupMusic();
+                setupMusic(mPlayMusicService.getSetup());
             case R.id.image_download:
                 break;
         }
@@ -204,7 +218,7 @@ public class PlayMusicFragment extends BaseFragment
         mImageViewArt = view.findViewById(R.id.image_track);
         mImageViewPlay = view.findViewById(R.id.image_play);
         mImageViewPrevious = view.findViewById(R.id.image_previous);
-        mImageViewAdapt = view.findViewById(R.id.image_adapt);
+        mImageViewSetup = view.findViewById(R.id.image_setup);
         mSeekBarProgress = view.findViewById(R.id.seek_progress);
         mImageViewDownLoad = view.findViewById(R.id.image_download);
         mImageViewDownLoad.setOnClickListener(this);
@@ -212,13 +226,15 @@ public class PlayMusicFragment extends BaseFragment
         mImageViewPlay.setOnClickListener(this);
         mImageViewPrevious.setOnClickListener(this);
         mSeekBarProgress.setOnSeekBarChangeListener(this);
-        mImageViewAdapt.setOnClickListener(this);
+        mImageViewSetup.setOnClickListener(this);
         mLinearBottomParentActivity.setOnClickListener(this);
         mImageViewPreviousParentActivity.setOnClickListener(this);
         mImageViewPlayParentActivity.setOnClickListener(this);
         mImageViewNextParentActivity.setOnClickListener(this);
         mLinearBottomParentActivity.setVisibility(View.VISIBLE);
         mUtilities = new Utilities();
+        setupMusic(getContext().getSharedPreferences(Constant.SETUP_MUSIC_PREFERENCES,
+                Context.MODE_PRIVATE).getString(Constant.SETUP, Constant.NON_REPEAT));
     }
 
     private void playService() {
@@ -259,8 +275,22 @@ public class PlayMusicFragment extends BaseFragment
             mTextViewTrackProgress.setText(mUtilities.milliSecondsToTimer(currentDuration));
             int progress = (mUtilities.getProgressPercentage(currentDuration, totalDuration));
             mSeekBarProgress.setProgress(progress);
-            if (currentPosition.equals(totalTime)) {
-                mPlayMusicService.nextTrack();
+
+            if (currentPosition.equals(totalTime)
+                    && mTrackIndex == mCollection.getTrackList().size() - 1
+                    && mSetup.equals(Constant.NON_REPEAT)) {
+
+                mHandler.removeCallbacks(mUpdateTimeTask);
+                mImageViewPlay.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                mImageViewPlayParentActivity.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                mImageViewArt.clearAnimation();
+                mImageViewArtParentActivity.clearAnimation();
+                lastNonTrack = true;
+                return;
+            } else if (currentPosition.equals(totalTime)) {
+                mPlayMusicService.nextTrack(false);
                 setupViews();
                 mTrackIndex = mPlayMusicService.getTrackIndex();
                 mMusicAdapter.addPosition(mTrackIndex);
@@ -315,6 +345,29 @@ public class PlayMusicFragment extends BaseFragment
         updateProgressBar();
     }
 
+    private void setupMusic(String setup) {
+        switch (setup) {
+            case Constant.REPEAT:
+                mImageViewSetup.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_repeat_orange_900_36dp));
+                break;
+            case Constant.REPEAT_ONE:
+                mImageViewSetup.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_repeat_one_orange_900_36dp));
+
+                break;
+            case Constant.SHUFFLE:
+                mImageViewSetup.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_shuffle_orange_900_36dp));
+                break;
+            case Constant.NON_REPEAT:
+                mImageViewSetup.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_repeat_white_36dp));
+                break;
+        }
+        mSetup = setup;
+    }
+
     private AnimationSet addAnimation() {
         AnimationSet animationSet = new AnimationSet(true);
         RotateAnimation rotateAnimation =
@@ -331,7 +384,7 @@ public class PlayMusicFragment extends BaseFragment
         mPresenter.loadMoreDataTrackList(nextHref);
     }
 
-    public void refreshData(Collection collection, int position) {
+    public void refreshData(Collection collection, int position, boolean isLocalTrack) {
         mPlayMusicService.stopMedia();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mMusicAdapter.clearData();
