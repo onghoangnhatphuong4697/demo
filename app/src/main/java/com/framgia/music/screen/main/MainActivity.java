@@ -3,7 +3,9 @@ package com.framgia.music.screen.main;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -12,6 +14,7 @@ import com.framgia.music.R;
 import com.framgia.music.screen.BaseActivity;
 import com.framgia.music.screen.playmusicscreen.PlayMusicFragment;
 import com.framgia.music.utils.Constant;
+import java.util.List;
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
 
@@ -35,6 +38,30 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down,
+                R.anim.slide_out_down, R.anim.slide_out_up);
+        PlayMusicFragment playMusicFragment =
+                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
+        if (playMusicFragment != null && !playMusicFragment.isHidden()) {
+            fragmentTransaction.hide(playMusicFragment);
+            fragmentTransaction.commit();
+            return;
+        }
+        if (doubleBackToExitPressedOnce) {
+            moveTaskToBack(true);
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.Please_press_Back_again_to_exit, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, DELAY_TIME_2000);
+    }
+
+    @Override
     public void onTabSelected(TabLayout.Tab tab) {
         tab.getIcon()
                 .setColorFilter(getResources().getColor(R.color.colorAccent),
@@ -51,6 +78,18 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
         //TODO
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
     }
 
     private void initView() {
@@ -77,35 +116,5 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 .getIcon()
                 .setColorFilter(getResources().getColor(R.color.colorAccent),
                         PorterDuff.Mode.SRC_IN);
-    }
-
-    @Override
-    public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down, R.anim
-                .slide_out_down, R.anim.slide_out_up);
-        PlayMusicFragment playMusicFragment =
-                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
-        if (playMusicFragment != null && !playMusicFragment.isHidden()) {
-            fragmentTransaction.hide(playMusicFragment);
-            fragmentTransaction.commit();
-            return;
-        }
-        if (doubleBackToExitPressedOnce) {
-            moveTaskToBack(true);
-            return;
-        }
-
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, R.string.Please_press_Back_again_to_exit, Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce = false;
-            }
-        }, DELAY_TIME_2000);
     }
 }

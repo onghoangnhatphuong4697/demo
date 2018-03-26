@@ -1,5 +1,6 @@
 package com.framgia.music.screen.playmusicscreen;
 
+import android.content.Context;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.repository.TrackRepository;
 import com.framgia.music.data.source.RequestDataCallback;
@@ -43,6 +44,21 @@ public class PlayMusicPresenter implements PlayMusicConTract.Presenter {
             @Override
             public void onFail(Exception e) {
                 mView.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public void downloadTrack(Context context, String url, String fileName) {
+        mTrackRepository.downloadTrack(context, url, fileName, new RequestDataCallback<String>() {
+            @Override
+            public void onSuccess(String message) {
+                mView.downloadSuccess(message);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                mView.downloadFail();
             }
         });
     }

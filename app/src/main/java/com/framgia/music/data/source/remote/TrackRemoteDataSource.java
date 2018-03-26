@@ -1,12 +1,15 @@
 package com.framgia.music.data.source.remote;
 
+import android.content.Context;
 import android.util.Log;
 import com.framgia.music.data.model.Artist;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.model.Track;
 import com.framgia.music.data.source.RequestDataCallback;
 import com.framgia.music.data.source.TrackDataSource;
+import com.framgia.music.data.source.remote.config.service.DownloadFileFromUrl;
 import com.framgia.music.data.source.remote.config.service.FetchDataFromURL;
+import com.framgia.music.screen.OnDownloadListener;
 import com.framgia.music.screen.OnFetchDataListener;
 import com.framgia.music.utils.Constant;
 import java.util.ArrayList;
@@ -77,6 +80,22 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
                 callback.onFail(e);
             }
         }).execute(nextHref);
+    }
+
+    @Override
+    public void downloadTrack(Context context, String url, String fileName,
+            RequestDataCallback<String> callback) {
+        new DownloadFileFromUrl(context, new OnDownloadListener() {
+            @Override
+            public void onDownloadSuccess(String message) {
+                callback.onSuccess(message);
+            }
+
+            @Override
+            public void onDownloadFail() {
+                callback.onFail(null);
+            }
+        }).startDownload(context, url, fileName);
     }
 
     private Collection parseJSON(String jsonString) {

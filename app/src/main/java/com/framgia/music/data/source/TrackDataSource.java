@@ -1,5 +1,6 @@
 package com.framgia.music.data.source;
 
+import android.content.Context;
 import com.framgia.music.data.model.Collection;
 
 /**
@@ -19,5 +20,8 @@ public interface TrackDataSource {
         void getTrackListByGenre(String genre, RequestDataCallback<Collection> callback);
 
         void loadMoreDataTrackList(String nextHref, RequestDataCallback<Collection> callback);
+
+        void downloadTrack(Context context, String url, String fileName,
+                RequestDataCallback<String> callback);
     }
 }

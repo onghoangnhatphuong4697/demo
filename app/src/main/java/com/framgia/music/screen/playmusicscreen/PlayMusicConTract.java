@@ -1,5 +1,6 @@
 package com.framgia.music.screen.playmusicscreen;
 
+import android.content.Context;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.screen.BasePresenter;
 
@@ -14,10 +15,15 @@ public interface PlayMusicConTract {
 
         void onError(Exception e);
 
+        void downloadSuccess(String message);
+
+        void downloadFail();
     }
 
     interface Presenter extends BasePresenter<View> {
 
         void loadMoreDataTrackList(String nextHref);
+
+        void downloadTrack(Context context, String url, String fileName);
     }
 }

@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.framgia.music.R;
@@ -34,6 +36,7 @@ import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
 import com.framgia.music.service.PlayMusicService;
 import com.framgia.music.utils.Constant;
 import com.framgia.music.utils.common.ConnectionUtils;
+import com.framgia.music.utils.common.PermissionUtils;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Context.BIND_AUTO_CREATE;
@@ -72,6 +75,7 @@ public class PlayMusicFragment extends BaseFragment
     private LinearLayout mLinearBottomParentActivity;
     private String mSetup;
     private boolean lastNonTrack;
+    private boolean isLocalTrack;
 
     public static PlayMusicFragment newInstance(Collection collection, int position,
             boolean isLocalTrack) {
@@ -79,6 +83,7 @@ public class PlayMusicFragment extends BaseFragment
         Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_COLLECTION, collection);
         args.putInt(Constant.POSITION, position);
+        args.putBoolean(Constant.ISLOCALTRACK, isLocalTrack);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,8 +99,12 @@ public class PlayMusicFragment extends BaseFragment
         mPresenter = new PlayMusicPresenter(trackRepository);
         mPresenter.setView(this);
         Bundle bundle = getArguments();
-        mCollection = bundle.getParcelable(ARGUMENT_COLLECTION);
-        mTrackIndex = bundle.getInt(Constant.POSITION, 0);
+        if (bundle != null) {
+            mCollection = bundle.getParcelable(ARGUMENT_COLLECTION);
+            mTrackIndex = bundle.getInt(Constant.POSITION, 0);
+            isLocalTrack = bundle.getBoolean(Constant.ISLOCALTRACK);
+        }
+
         if (mCollection != null) {
             showTrackList();
             playService();
@@ -113,6 +122,16 @@ public class PlayMusicFragment extends BaseFragment
 
     @Override
     public void onError(Exception e) {
+        //TODO
+    }
+
+    @Override
+    public void downloadSuccess(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void downloadFail() {
         //TODO
     }
 
@@ -197,8 +216,29 @@ public class PlayMusicFragment extends BaseFragment
                 mPlayMusicService.setupMusic();
                 setupMusic(mPlayMusicService.getSetup());
             case R.id.image_download:
+                if (PermissionUtils.requestPermission(getActivity())) {
+                    startDownload();
+                }
                 break;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Constant.REQUEST_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(getContext(), R.string.granted, Toast.LENGTH_SHORT).show();
+                    startDownload();
+                } else {
+                    Toast.makeText(getContext(), R.string.no_granted, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     private void initViews(View view) {
@@ -239,9 +279,12 @@ public class PlayMusicFragment extends BaseFragment
 
     private void playService() {
         getService();
-        Intent intent = PlayMusicService.getTracksIntent(getContext(), mCollection, mTrackIndex);
-        getActivity().startService(intent);
-        getActivity().bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+        Intent intent = PlayMusicService.getTracksIntent(getContext(), mCollection, mTrackIndex,
+                isLocalTrack);
+        if (getActivity() != null) {
+            getActivity().startService(intent);
+            getActivity().bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     private void getService() {
@@ -300,7 +343,13 @@ public class PlayMusicFragment extends BaseFragment
         }
     };
 
-    public void showTrackList() {
+    private void startDownload() {
+        mPresenter.downloadTrack(getContext(),
+                mCollection.getTrackList().get(mTrackIndex).getStreamUrl() + Constant.CLIENT_ID,
+                mCollection.getTrackList().get(mTrackIndex).getTitle());
+    }
+
+    private void showTrackList() {
         mMusicAdapter = new PlayMusicAdapter(getContext(), this);
         mLayoutManager = new LinearLayoutManager(getContext());
         mMusicAdapter.addData(mCollection.getTrackList());
