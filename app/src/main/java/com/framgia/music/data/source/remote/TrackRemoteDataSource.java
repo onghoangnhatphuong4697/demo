@@ -98,6 +98,22 @@ public class TrackRemoteDataSource implements TrackDataSource.RemoteDataSource {
         }).startDownload(context, url, fileName);
     }
 
+    @Override
+    public void searchTracks(String href, RequestDataCallback<Collection> callback) {
+        new FetchDataFromURL(new OnFetchDataListener() {
+            @Override
+            public void onFetchDataSuccess(String data) {
+                Collection collection = parseJSON(data);
+                callback.onSuccess(collection);
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                callback.onFail(e);
+            }
+        }).execute(href);
+    }
+
     private Collection parseJSON(String jsonString) {
         Collection collection = new Collection();
         List<Track> trackList = new ArrayList<>();

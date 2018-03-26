@@ -203,7 +203,7 @@ public class PlayMusicFragment extends BaseFragment
                 }
                 break;
             case R.id.image_next:
-                mPlayMusicService.nextTrack(false);
+                mPlayMusicService.nextTrack(true);
                 setupViews();
                 mTrackIndex = mPlayMusicService.getTrackIndex();
                 mMusicAdapter.addPosition(mTrackIndex);
@@ -484,7 +484,7 @@ public class PlayMusicFragment extends BaseFragment
                     case Constant.ACTION_PLAY:
                         mImageViewPlay.setImageDrawable(
                                 getResources().getDrawable(R.drawable.ic_pause_white_36dp));
-                        mImageViewArtParentActivity.setImageDrawable(
+                        mImageViewPlayParentActivity.setImageDrawable(
                                 getResources().getDrawable(R.drawable.ic_pause_black_36dp));
                         mImageViewArt.startAnimation(addAnimation());
                         mImageViewArtParentActivity.startAnimation(addAnimation());
@@ -492,9 +492,9 @@ public class PlayMusicFragment extends BaseFragment
                         break;
                     case Constant.ACTION_PAUSE:
                         mImageViewPlay.setImageDrawable(
-                                getResources().getDrawable(R.drawable.ic_pause_white_36dp));
-                        mImageViewArtParentActivity.setImageDrawable(
-                                getResources().getDrawable(R.drawable.ic_pause_black_36dp));
+                                getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                        mImageViewPlayParentActivity.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_play_arrow_black_36dp));
                         mImageViewArt.clearAnimation();
                         mImageViewArtParentActivity.clearAnimation();
                         break;
