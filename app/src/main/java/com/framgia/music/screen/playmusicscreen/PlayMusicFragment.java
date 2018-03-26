@@ -1,8 +1,10 @@
 package com.framgia.music.screen.playmusicscreen;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -49,6 +51,7 @@ public class PlayMusicFragment extends BaseFragment
         implements PlayMusicConTract.View, PlayMusicAdapter.ItemClickListener,
         SeekBar.OnSeekBarChangeListener, View.OnClickListener {
 
+    private static final int PRIORITY_RECEIVE = 1;
     private static final String ARGUMENT_COLLECTION = "BUNDLE_ARGUMENT_COLLECTION";
     private static final int DURATION_15000 = 15000;
     private static final int POSITION_0 = 0;
@@ -108,6 +111,7 @@ public class PlayMusicFragment extends BaseFragment
         if (mCollection != null) {
             showTrackList();
             playService();
+            registerBroadcastReceiver();
         }
         return view;
     }
@@ -437,7 +441,7 @@ public class PlayMusicFragment extends BaseFragment
         mPlayMusicService.stopMedia();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mMusicAdapter.clearData();
-        mPlayMusicService.refreshData(collection.getTrackList(), position);
+        mPlayMusicService.refreshData(collection.getTrackList(), position, isLocalTrack);
 
         mMusicAdapter.addData(collection.getTrackList());
         mCollection = collection;
@@ -458,5 +462,54 @@ public class PlayMusicFragment extends BaseFragment
             fragmentTransaction.show(playMusicFragment);
             fragmentTransaction.commit();
         }
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null) {
+                switch (intent.getAction()) {
+                    case Constant.ACTION_NEXT:
+                        mTrackIndex = mPlayMusicService.getTrackIndex();
+                        setupViews();
+                        mMusicAdapter.addPosition(mTrackIndex);
+                        mMusicAdapter.notifyItemRangeChanged(0, mMusicAdapter.getItemCount());
+                        break;
+                    case Constant.ACTION_PREVIOUS:
+                        mTrackIndex = mPlayMusicService.getTrackIndex();
+                        setupViews();
+                        mMusicAdapter.addPosition(mTrackIndex);
+                        mMusicAdapter.notifyItemRangeChanged(0, mMusicAdapter.getItemCount());
+                        break;
+                    case Constant.ACTION_PLAY:
+                        mImageViewPlay.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                        mImageViewArtParentActivity.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_pause_black_36dp));
+                        mImageViewArt.startAnimation(addAnimation());
+                        mImageViewArtParentActivity.startAnimation(addAnimation());
+                        updateProgressBar();
+                        break;
+                    case Constant.ACTION_PAUSE:
+                        mImageViewPlay.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                        mImageViewArtParentActivity.setImageDrawable(
+                                getResources().getDrawable(R.drawable.ic_pause_black_36dp));
+                        mImageViewArt.clearAnimation();
+                        mImageViewArtParentActivity.clearAnimation();
+                        break;
+                }
+            }
+        }
+    };
+
+    private void registerBroadcastReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constant.ACTION_PAUSE);
+        intentFilter.addAction(Constant.ACTION_NEXT);
+        intentFilter.addAction(Constant.ACTION_PREVIOUS);
+        intentFilter.addAction(Constant.ACTION_PLAY);
+        intentFilter.setPriority(PRIORITY_RECEIVE);
+        getContext().registerReceiver(mBroadcastReceiver, intentFilter);
     }
 }

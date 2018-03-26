@@ -61,6 +61,10 @@ public final class Constant {
     public static final String SETUP_MUSIC_PREFERENCES = "setup_music_preferences";
     public static final String ISLOCALTRACK = "isLocalTrack";
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    public static final String ACTION_PLAY = "com.framgia.music.ACTION_PLAY";
+    public static final String ACTION_PAUSE = "com.framgia.music.ACTION_PAUSE";
+    public static final String ACTION_PREVIOUS = "com.framgia.music.ACTION_PREVIOUS";
+    public static final String ACTION_NEXT = "com.framgia.music.ACTION_NEXT";
 
     private Constant() {
     }

@@ -1,5 +1,6 @@
 package com.framgia.music.screen.main;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
@@ -89,6 +90,23 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             for (Fragment fragment : fragments) {
                 fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
             }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+            showFragment();
+    }
+
+    private void showFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        PlayMusicFragment playMusicFragment =
+                (PlayMusicFragment) fragmentManager.findFragmentByTag(Constant.TAG_PLAY_FRAGMENT);
+        if (playMusicFragment != null && playMusicFragment.isHidden()) {
+            fragmentTransaction.show(playMusicFragment);
+            fragmentTransaction.commit();
         }
     }
 
