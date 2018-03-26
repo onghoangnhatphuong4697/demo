@@ -1,8 +1,13 @@
 package com.framgia.music.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -10,8 +15,15 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.NotificationTarget;
+import com.framgia.music.R;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.model.Track;
+import com.framgia.music.screen.main.MainActivity;
 import com.framgia.music.utils.Constant;
 import java.io.IOException;
 import java.util.List;
@@ -23,6 +35,9 @@ import java.util.Random;
 
 public class PlayMusicService extends Service implements MediaPlayer.OnPreparedListener {
 
+    private static final int NOTIFICATION_ID = 101;
+    private static final int PRIORITY_RECEIVE = 2;
+    private static final String NULL = "null";
     private static final String TAG = "Exception";
     private MediaPlayer mMediaPlayer;
     private IBinder mIBinder = new LocalBinder();
@@ -33,11 +48,14 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     private String mSetup;
     private SharedPreferences mSharedPreferences;
     private boolean isLocalTrack;
+    private NotificationManager mNotificationManager;
+    private Notification mNotification;
 
     @Override
     public void onCreate() {
-        getDataFromSharedPreferences();
         super.onCreate();
+        getDataFromSharedPreferences();
+        registerBroadcastReceive();
     }
 
     @Override
@@ -48,6 +66,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         if (mCollection != null && mTrackIndex != -1) {
             mTrackList = mCollection.getTrackList();
             initMediaPlayer();
+            buildNotification();
         }
         return START_NOT_STICKY;
     }
@@ -61,15 +80,6 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         playMedia();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mMediaPlayer != null) {
-            stopMedia();
-            mMediaPlayer.release();
-        }
-        super.onDestroy();
     }
 
     public static Intent getTracksIntent(Context context, Collection collection, int position,
@@ -134,11 +144,13 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
             Thread thread = new Thread(() -> mMediaPlayer.start());
             thread.start();
         }
+        updateNotification(Constant.ACTION_PLAY);
     }
 
     public void pauseMedia() {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
+            updateNotification(Constant.ACTION_PAUSE);
         }
     }
 
@@ -164,6 +176,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         stopMedia();
         mMediaPlayer.reset();
         initMediaPlayer();
+        updateNotification(Constant.ACTION_PREVIOUS);
     }
 
     public void playTrack(int index) {
@@ -171,6 +184,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         stopMedia();
         mMediaPlayer.reset();
         initMediaPlayer();
+        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
 
     public void nextTrack(boolean controlByHand) {
@@ -202,6 +216,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         stopMedia();
         mMediaPlayer.reset();
         initMediaPlayer();
+        updateNotification(Constant.ACTION_NEXT);
     }
 
     public void setupMusic() {
@@ -269,8 +284,138 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
                 : "";
     }
 
-    public void refreshData(List<Track> trackList, int position) {
+    public void refreshData(List<Track> trackList, int position, boolean localTrack) {
         mTrackList = trackList;
         mTrackIndex = position;
+        isLocalTrack = localTrack;
+    }
+
+    private void buildNotification() {
+        String trackName = mTrackList.get(mTrackIndex).getTitle();
+        String userName = mTrackList.get(mTrackIndex).getArtist().getUsername();
+        String imageString = mTrackList.get(mTrackIndex).getArtworkUrl();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.custom_notification);
+        mNotification = new Notification.Builder(getApplicationContext()).setSmallIcon(
+                R.drawable.ic_skip_next_white_36dp)
+                .setContentTitle(trackName)
+                .setContentText(userName)
+                .setContentIntent(pendingIntent)
+                .build();
+        mNotification.contentView = remoteViews;
+        mNotification.contentView.setTextViewText(R.id.text_track_name, trackName);
+        mNotification.contentView.setTextViewText(R.id.text_user_name, userName);
+        NotificationTarget notificationTarget =
+                new NotificationTarget(this, R.id.image_track, mNotification.contentView,
+                        mNotification, NOTIFICATION_ID);
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(imageString)
+                .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
+                .into(notificationTarget);
+        mNotification.flags |= Notification.FLAG_ONGOING_EVENT;
+        setListener(mNotification.contentView);
+        startForeground(NOTIFICATION_ID, mNotification);
+    }
+
+    public void setListener(RemoteViews views) {
+        Intent previous = new Intent(Constant.ACTION_PREVIOUS);
+        Intent pause = new Intent(Constant.ACTION_PAUSE);
+        Intent next = new Intent(Constant.ACTION_NEXT);
+        Intent play = new Intent(Constant.ACTION_PLAY);
+
+        PendingIntent pPrevious = PendingIntent.getBroadcast(getApplicationContext(), 0, previous,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.image_previous, pPrevious);
+
+        PendingIntent pPause = PendingIntent.getBroadcast(getApplicationContext(), 0, pause,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.image_pause, pPause);
+
+        PendingIntent pNext = PendingIntent.getBroadcast(getApplicationContext(), 0, next,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.image_next, pNext);
+
+        PendingIntent pPlay = PendingIntent.getBroadcast(getApplicationContext(), 0, play,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.image_play, pPlay);
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() != null) {
+                switch (intent.getAction()) {
+                    case Constant.ACTION_PREVIOUS:
+                        preTrack();
+                        break;
+                    case Constant.ACTION_NEXT:
+                        nextTrack(true);
+                        break;
+                    case Constant.ACTION_PLAY:
+                        playMedia();
+                        break;
+                    case Constant.ACTION_PAUSE:
+                        pauseMedia();
+                        break;
+                }
+            }
+        }
+    };
+
+    private void registerBroadcastReceive() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Constant.ACTION_PLAY);
+        intentFilter.addAction(Constant.ACTION_NEXT);
+        intentFilter.addAction(Constant.ACTION_PAUSE);
+        intentFilter.addAction(Constant.ACTION_PREVIOUS);
+        intentFilter.setPriority(PRIORITY_RECEIVE);
+        registerReceiver(mBroadcastReceiver, intentFilter);
+    }
+
+    private void updateNotification(String action) {
+        if (action.equals(Constant.ACTION_NEXT) || action.equals(Constant.ACTION_PREVIOUS)) {
+            mNotification.contentView.setTextViewText(R.id.text_track_name,
+                    mTrackList.get(mTrackIndex).getTitle());
+            mNotification.contentView.setTextViewText(R.id.text_user_name,
+                    mTrackList.get(mTrackIndex).getArtist().getUsername());
+            NotificationTarget notificationTarget =
+                    new NotificationTarget(this, R.id.image_track, mNotification.contentView,
+                            mNotification, NOTIFICATION_ID);
+            String art = getArt();
+            if (art.equals(NULL)) {
+                Glide.with(getApplicationContext())
+                        .asBitmap()
+                        .load(R.drawable.ic_logo)
+                        .into(notificationTarget);
+            } else {
+                Glide.with(getApplicationContext()).asBitmap().load(art).into(notificationTarget);
+            }
+        } else if (action.equals(Constant.ACTION_PLAY)) {
+            mNotification.contentView.setTextViewText(R.id.text_track_name,
+                    mTrackList.get(mTrackIndex).getTitle());
+            mNotification.contentView.setTextViewText(R.id.text_user_name,
+                    mTrackList.get(mTrackIndex).getArtist().getUsername());
+            NotificationTarget notificationTarget =
+                    new NotificationTarget(this, R.id.image_track, mNotification.contentView,
+                            mNotification, NOTIFICATION_ID);
+            Glide.with(getApplicationContext())
+                    .asBitmap()
+                    .load(mTrackList.get(mTrackIndex).getArtworkUrl())
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
+                    .into(notificationTarget);
+            mNotification.contentView.setViewVisibility(R.id.image_play, View.GONE);
+            mNotification.contentView.setViewVisibility(R.id.image_pause, View.VISIBLE);
+            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        } else if (action.equals(Constant.ACTION_PAUSE)) {
+            mNotification.contentView.setViewVisibility(R.id.image_pause, View.GONE);
+            mNotification.contentView.setViewVisibility(R.id.image_play, View.VISIBLE);
+            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        }
     }
 }
