@@ -12,4 +12,8 @@
         <item name="android:background">@color/color_black</item>
     </style>
 
+    <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

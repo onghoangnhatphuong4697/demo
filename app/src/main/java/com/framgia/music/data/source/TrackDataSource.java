@@ -23,5 +23,7 @@ public interface TrackDataSource {
 
         void downloadTrack(Context context, String url, String fileName,
                 RequestDataCallback<String> callback);
+
+        void searchTracks(String href, RequestDataCallback<Collection> callback);
     }
 }

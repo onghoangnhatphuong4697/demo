@@ -58,4 +58,8 @@ public final class TrackRepository
         mTrackRemoteDataSource.downloadTrack(context, url, fileName, callback);
     }
 
+    @Override
+    public void searchTracks(String href, RequestDataCallback<Collection> callback) {
+        mTrackRemoteDataSource.searchTracks(href, callback);
+    }
 }
