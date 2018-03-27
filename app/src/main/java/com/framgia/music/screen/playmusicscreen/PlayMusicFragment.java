@@ -105,7 +105,7 @@ public class PlayMusicFragment extends BaseFragment
         if (bundle != null) {
             mCollection = bundle.getParcelable(ARGUMENT_COLLECTION);
             mTrackIndex = bundle.getInt(Constant.POSITION, 0);
-            isLocalTrack = bundle.getBoolean(Constant.ISLOCALTRACK);
+            isLocalTrack = bundle.getBoolean(Constant.ISLOCALTRACK, false);
         }
 
         if (mCollection != null) {
@@ -219,8 +219,9 @@ public class PlayMusicFragment extends BaseFragment
             case R.id.image_setup:
                 mPlayMusicService.setupMusic();
                 setupMusic(mPlayMusicService.getSetup());
+                break;
             case R.id.image_download:
-                if (PermissionUtils.requestPermission(getActivity())) {
+                if (PermissionUtils.requestPermission(getActivity()) && !isLocalTrack) {
                     startDownload();
                 }
                 break;
@@ -437,7 +438,8 @@ public class PlayMusicFragment extends BaseFragment
         mPresenter.loadMoreDataTrackList(nextHref);
     }
 
-    public void refreshData(Collection collection, int position, boolean isLocalTrack) {
+    public void refreshData(Collection collection, int position, boolean localTrack) {
+        isLocalTrack = localTrack;
         mPlayMusicService.stopMedia();
         mHandler.removeCallbacks(mUpdateTimeTask);
         mMusicAdapter.clearData();

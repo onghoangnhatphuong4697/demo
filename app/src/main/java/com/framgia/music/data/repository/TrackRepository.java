@@ -62,4 +62,8 @@ public final class TrackRepository
     public void searchTracks(String href, RequestDataCallback<Collection> callback) {
         mTrackRemoteDataSource.searchTracks(href, callback);
     }
+    @Override
+    public void getAllTracksFromLocal(Context context, RequestDataCallback<Collection> callback) {
+        mTrackLocalDataSource.getAllTracksFromLocal(context, callback);
+    }
 }

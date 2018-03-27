@@ -20,6 +20,7 @@ import com.framgia.music.R;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.model.Track;
 import com.framgia.music.data.repository.TrackRepository;
+import com.framgia.music.data.source.local.TrackLocalDataSource;
 import com.framgia.music.data.source.remote.TrackRemoteDataSource;
 import com.framgia.music.screen.BaseFragment;
 import com.framgia.music.screen.EndlessRecyclerViewScrollListener;
@@ -58,7 +59,8 @@ public class TabHomeFragment extends BaseFragment
         View view = inflater.inflate(R.layout.tabhome_fragment, container, false);
         initViews(view);
         TrackRepository trackRepository =
-                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(), null);
+                TrackRepository.getInstance(TrackRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance());
         mPresenter = new TabHomePresenter(trackRepository);
         mPresenter.setView(this);
         if (getUserVisibleHint() && !isFragmentLoaded) {
@@ -157,6 +159,7 @@ public class TabHomeFragment extends BaseFragment
                         }
                     }
                 });
+
     }
 
     @Override
@@ -293,7 +296,7 @@ public class TabHomeFragment extends BaseFragment
         mLinearDot = view.findViewById(R.id.linear_dot);
         mViewPagerSlider.addOnPageChangeListener(this);
     }
-
+//ss
     private void updatePagePosition(int position) {
         for (TextView textViewDView : mTextViewsDot) {
             textViewDView.setTextColor(getResources().getColor(R.color.color_slider_in_active));

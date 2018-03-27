@@ -40,4 +40,3 @@ test:
   override:
       - sh scripts/saddler.sh:
           timeout: 1800
-      - sh scripts/pushNotification.sh

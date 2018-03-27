@@ -10,7 +10,7 @@ import com.framgia.music.data.model.Collection;
 public interface TrackDataSource {
 
     interface LocalDataSource extends TrackDataSource {
-
+        void getAllTracksFromLocal(Context context, RequestDataCallback<Collection> callback);
     }
 
     interface RemoteDataSource extends TrackDataSource {
