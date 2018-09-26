@@ -22,6 +22,16 @@ public class MainModule {
     @Provides
     public MainContract.Presenter providePresenter(MovieDataSource.RemoteDataSoure remoteSoure) {
         MainContract.Presenter presenter = new MainPresenter(mView, remoteSoure);
+
+
+
+
+
+
+
+
+
+
         return presenter;
     }
 

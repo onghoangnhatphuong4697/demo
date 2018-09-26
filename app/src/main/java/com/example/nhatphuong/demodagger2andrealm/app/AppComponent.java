@@ -13,3 +13,9 @@ public interface AppComponent {
 
     ApiMovie apiMovie();
 }
+
+
+
+
+
+
