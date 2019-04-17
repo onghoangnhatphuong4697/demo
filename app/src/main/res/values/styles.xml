@@ -8,12 +8,19 @@
         <item name="colorAccent">@color/color_white</item>
     </style>
 
+    <style name="AppThemeMain" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#f45414</item>
+        <item name="colorPrimaryDark">@color/color_black</item>
+        <item name="colorAccent">#f45414</item>
+    </style>
+
     <style name="LinearLayout">
         <item name="android:background">@color/color_black</item>
     </style>
 
     <style name="ToolbarStyle" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">#f45414</item>
     </style>
 
 </resources>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorAccent">#f54c13</color>
+    <color name="colorAccent">#FC1E0D</color>
     <color name="colorGray">#E0E0E0</color>
     <color name="color_white">#fff</color>
     <color name="color_gray_tab">#616161</color>
-    <color name="color_orange">#f7770f</color>
-    <color name="color_white_orange">#ead4bd</color>
+    <color name="color_orange">#f45414</color>
+    <color name="color_white_orange">#FAA042</color>
     <color name="color_black">#000</color>
     <color name="color_slider_in_active">#dcded8</color>
     <color name="color_grayish">#EEEEEE</color>

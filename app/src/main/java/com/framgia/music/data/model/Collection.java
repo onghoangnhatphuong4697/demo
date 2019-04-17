@@ -2,6 +2,7 @@ package com.framgia.music.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,8 +11,8 @@ import java.util.List;
 
 public final class Collection implements Parcelable {
 
-    private List<Track> mTrackList;
-    private String mNextHref;
+    private List<Track> mTrackList = new ArrayList<>();
+    private String mNextHref = "";
 
     public Collection() {}
 

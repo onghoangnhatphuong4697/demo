@@ -56,7 +56,10 @@ public class TabSearchPresenter implements TabSearchContract.Presenter {
         mTrackRepository.loadMoreDataTrackList(nextHref, new RequestDataCallback<Collection>() {
             @Override
             public void onSuccess(Collection data) {
-                mView.updateTrackList(data);
+                if(data != null) {
+                    mView.updateTrackList(data);
+
+                }
             }
 
             @Override

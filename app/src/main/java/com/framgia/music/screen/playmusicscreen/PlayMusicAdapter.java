@@ -88,9 +88,9 @@ public class PlayMusicAdapter extends BaseRecyclerViewAdapter<PlayMusicAdapter.V
         void changeColor() {
 
             mTextViewTrackTitle.setTextColor(
-                    itemView.getContext().getResources().getColor(R.color.colorAccent));
+                    itemView.getContext().getResources().getColor(R.color.color_orange));
             mTextViewUserName.setTextColor(
-                    itemView.getContext().getResources().getColor(R.color.colorAccent));
+                    itemView.getContext().getResources().getColor(R.color.color_orange));
         }
 
         void resetColor() {

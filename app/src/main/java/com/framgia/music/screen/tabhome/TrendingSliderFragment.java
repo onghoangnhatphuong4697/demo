@@ -22,10 +22,10 @@ public class TrendingSliderFragment extends BaseFragment {
     private static final String ARGUMENT_ARTWORK = "BUNDLE_ARTWORK_URL";
     private ImageView mImageViewSlider;
 
-    public static TrendingSliderFragment newInstance(Track track) {
+    public static TrendingSliderFragment newInstance(String track) {
         TrendingSliderFragment fragment = new TrendingSliderFragment();
         Bundle args = new Bundle();
-        args.putString(ARGUMENT_ARTWORK, track.getArtworkUrl());
+        args.putString(ARGUMENT_ARTWORK, track);
         fragment.setArguments(args);
         return fragment;
     }

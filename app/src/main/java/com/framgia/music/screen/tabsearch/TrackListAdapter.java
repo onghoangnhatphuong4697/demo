@@ -33,8 +33,8 @@ public class TrackListAdapter extends BaseRecyclerViewAdapter<TrackListAdapter.V
     @NonNull
     @Override
     public TrackListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(getContext())
-                .inflate(R.layout.track_item_search, parent, false);
+        View view =
+            LayoutInflater.from(getContext()).inflate(R.layout.track_item_search, parent, false);
         return new ViewHolder(view, mItemClickListener);
     }
 
@@ -83,11 +83,14 @@ public class TrackListAdapter extends BaseRecyclerViewAdapter<TrackListAdapter.V
 
         void setData(Track track) {
             Glide.with(itemView.getContext())
-                    .load(track.getArtworkUrl())
-                    .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
-                    .into(mImageViewTrack);
+                .load(track.getArtworkUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.ic_logo))
+                .into(mImageViewTrack);
             mTextViewTrackName.setText(track.getTitle());
-            mTextViewUserName.setText(track.getArtist().getUsername());
+            if(track.getArtist()!= null){
+                mTextViewUserName.setText(track.getArtist().getUsername());
+
+            }
         }
     }
 

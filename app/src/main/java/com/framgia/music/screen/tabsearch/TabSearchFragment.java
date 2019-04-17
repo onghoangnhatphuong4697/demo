@@ -1,5 +1,7 @@
 package com.framgia.music.screen.tabsearch;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import com.framgia.music.R;
 import com.framgia.music.data.model.Collection;
 import com.framgia.music.data.repository.TrackRepository;
@@ -39,6 +43,7 @@ public class TabSearchFragment extends BaseFragment
     private TabSearchContract.Presenter mPresenter;
     private Collection mCollection;
     private TrackListAdapter mAdapter;
+    private LinearLayout mLinearLayout ;
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Nullable
@@ -96,7 +101,7 @@ public class TabSearchFragment extends BaseFragment
 
     @Override
     public void showTracks(Collection collection) {
-        mCollection = new Collection();
+
         mCollection.setTrackList(collection.getTrackList());
         mCollection.setNextHref(collection.getNextHref());
         mAdapter.addData(collection.getTrackList());
@@ -115,9 +120,12 @@ public class TabSearchFragment extends BaseFragment
 
     @Override
     public void updateTrackList(Collection collection) {
-        mCollection.getTrackList().addAll(collection.getTrackList());
-        mCollection.setNextHref(collection.getNextHref());
-        mAdapter.addData(collection.getTrackList());
+            mCollection.getTrackList().addAll(collection.getTrackList());
+            mCollection.setNextHref(collection.getNextHref());
+            mAdapter.addData(collection.getTrackList());
+        //        mCollection.getTrackList().addAll(collection.getTrackList());
+        //        mCollection.setNextHref(collection.getNextHref());
+        //        mAdapter.addData(collection.getTrackList());
     }
 
     @Override
@@ -144,6 +152,13 @@ public class TabSearchFragment extends BaseFragment
             fragmentTransaction.show(playMusicFragment);
             fragmentTransaction.commit();
         }
+        hideKeyboardFrom(requireContext(), mToolbar);
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm =
+                (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     @Override
@@ -154,18 +169,19 @@ public class TabSearchFragment extends BaseFragment
     }
 
     private void initViews(View view) {
+        mCollection = new Collection();
         mRecyclerViewSearch = view.findViewById(R.id.recycler_tracks_search);
+        mLinearLayout = view.findViewById(R.id.layout_search);
         mToolbar = view.findViewById(R.id.tool_bar);
         mToolbar.setTitle(getContext().getResources().getString(R.string.search));
         mToolbar.setTitleTextColor(getContext().getResources().getColor(R.color.colorGray));
         mToolbar.setTitleMarginStart((int) getResources().getDimension(R.dimen.dp_80));
         AppCompatActivity appCompatActivity = (AppCompatActivity) getActivity();
-        appCompatActivity.setSupportActionBar(mToolbar);
+              appCompatActivity.setSupportActionBar(mToolbar);
         mAdapter = new TrackListAdapter(getContext(), this);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViewSearch.setLayoutManager(mLayoutManager);
         mRecyclerViewSearch.setAdapter(mAdapter);
-        mCollection = new Collection();
     }
 
     private void loadNextDataFromApi(String nextHref) {

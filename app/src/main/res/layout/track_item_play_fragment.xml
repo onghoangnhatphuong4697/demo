@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/dp_10"
-    style="@style/LinearLayout"
     android:orientation="vertical"
     >
     <TextView
@@ -26,6 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0.6"
         android:layout_marginTop="@dimen/dp_5"
-        android:background="@color/colorGray"
+        android:background="@color/color_white_orange"
         />
 </LinearLayout>

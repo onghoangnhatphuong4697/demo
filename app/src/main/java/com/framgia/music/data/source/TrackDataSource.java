@@ -2,6 +2,10 @@ package com.framgia.music.data.source;
 
 import android.content.Context;
 import com.framgia.music.data.model.Collection;
+import com.framgia.music.data.model.Song;
+import com.framgia.music.data.model.Track;
+import io.reactivex.Observable;
+import java.util.List;
 
 /**
  * Created by Admin on 3/20/2018.
@@ -25,5 +29,9 @@ public interface TrackDataSource {
                 RequestDataCallback<String> callback);
 
         void searchTracks(String href, RequestDataCallback<Collection> callback);
+    }
+
+    interface SongRemoteDataSource {
+        Observable<List<Song>> getSongByGenre(String genre);
     }
 }

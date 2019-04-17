@@ -2,6 +2,8 @@ package com.framgia.music.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Admin on 3/8/2018.
@@ -9,11 +11,24 @@ import android.os.Parcelable;
 
 public class Artist implements Parcelable {
 
+    @SerializedName("avatar_url")
+    @Expose
     private String mAvatarUrl;
+    @SerializedName("id")
+    @Expose
     private Integer mId;
+    @SerializedName("username")
+    @Expose
     private String mUsername;
 
-    public Artist() {}
+    public Artist() {
+    }
+
+    public Artist(String avatarUrl, Integer id, String username) {
+        mAvatarUrl = avatarUrl;
+        mId = id;
+        mUsername = username;
+    }
 
     private Artist(Parcel in) {
         mAvatarUrl = in.readString();

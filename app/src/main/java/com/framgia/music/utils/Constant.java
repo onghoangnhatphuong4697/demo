@@ -1,7 +1,6 @@
 package com.framgia.music.utils;
 
 import android.support.annotation.StringDef;
-import com.framgia.music.BuildConfig;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -16,16 +15,21 @@ import static com.framgia.music.utils.Constant.Genres.COUNTRY;
 
 public final class Constant {
 
+    public static final String PREVIOUS = "Lùi lại 1 bài";
+    public static final String NEXT = "Tới lại 1 bài";
+    public static final String PLAY = "Phát bài hát";
+    public static final String GO_TO_PLAYER = " Goo to play" ;
+
     @StringDef({ ALTERNATIVEROCK, AMBIENT, CLASSICAL, COUNTRY })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Genres {
-        String ALTERNATIVEROCK = "alternativerock";
-        String AMBIENT = "ambient";
-        String CLASSICAL = "classical";
-        String COUNTRY = "country";
+        String ALTERNATIVEROCK = "study";
+        String AMBIENT = "party";
+        String CLASSICAL = "relax";
+        String COUNTRY = "workout";
     }
 
-    public static final String CLIENT_ID = "?client_id=" + BuildConfig.API_KEY;
+    public static final String CLIENT_ID = "?client_id=" + "a25e51780f7f86af0afa91f241d091f8";
     public static final String KIND = "kind";
     public static final String ID = "id";
     public static final String URI = "uri";
@@ -47,12 +51,14 @@ public final class Constant {
     public static final float FROM_0 = 0.0f;
     public static final float TO_360 = 360.0f;
     public static final float PIVOT_0_5 = 0.5f;
+    public static final String BASE_URL = "http://api.soundcloud.com/";
     public static final String TRACK_GENRES_URL =
             "http://api.soundcloud.com/tracks" + CLIENT_ID + "&linked_partitioning=1&genres=";
     public static final String TRACK_SEARCH_URL =
             "http://api.soundcloud.com/tracks" + CLIENT_ID + "&linked_partitioning=1&q=";
     public static final String TRENDING_TRACK_URL = "http://api.soundcloud.com/tracks"
-            + CLIENT_ID + "&kind=trending&limit=5&order=created_at&linked_partitioning=1";
+            + CLIENT_ID
+            + "&kind=trending&limit=5&order=created_at&linked_partitioning=1";
     public static final String SHUFFLE = "shuffle";
     public static final String REPEAT = "repeat";
     public static final String REPEAT_ONE = "repeat_one";
@@ -65,6 +71,17 @@ public final class Constant {
     public static final String ACTION_PAUSE = "com.framgia.music.ACTION_PAUSE";
     public static final String ACTION_PREVIOUS = "com.framgia.music.ACTION_PREVIOUS";
     public static final String ACTION_NEXT = "com.framgia.music.ACTION_NEXT";
+    public static final String BUNDLE_CHECK_LOGIN = "BUNDLE_CHECK_LOGIN";
+    public static final String IS_CHECK_LOCK_OUT = "IS_CHECK_LOCK_OUT";
+    public static final String BUNDLE_LOGIN = "BUNDLE_LOGIN";
+    public static final String USER_DETAIL = "USER_DETAIL";
+    public static final String USER_NAME_ = "USER_NAME_";
+    public static final String USER_PASS = "USER_PASS";
+    public static final String USER_EMAIL = "USER_EMAIL";
+    public static final String USER_ADDRESS = "USER_ADDRESS";
+    public static final String BOOLEAN_SIGN_IN = "BOOLEAN_SIGN_IN";
+    public static final String LINK_GET_USER_INFO =
+            "http://api.soundcloud.com/resolve?url=http://soundcloud.com/USER_NAME&client_id=d3bb97412667a7812924715ea66498af";
 
     private Constant() {
     }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+
+        android:title="@string/title_detail">
+        <menu>
+            <item
+                android:id="@+id/button_login"
+                android:icon="@drawable/ic_genre"
+                android:title="@string/title_genre"/>
+            <item
+                android:id="@+id/button_sign_up"
+                android:icon="@drawable/ic_sign_up"
+                android:title="@string/title_actor"/>
+            <item
+                android:id="@+id/button_infor"
+                android:icon="@drawable/ic_details"
+                android:title="@string/title_infor"/>
+        </menu>
+    </item>
+    <item
+        android:title="@string/title_detail">
+        <menu>
+
+            <item
+                android:id="@+id/button_favorite"
+                android:icon="@drawable/ic_heart"
+                android:title="@string/title_favorite"/>
+
+            <item
+                android:id="@+id/button_sign_out"
+                android:icon="@drawable/ic_log_out"
+                android:title="@string/title_logout"/>
+
+        </menu>
+    </item>
+</menu>

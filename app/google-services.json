@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "180038087765",
+    "firebase_url": "https://music20-80e98.firebaseio.com",
+    "project_id": "music20-80e98",
+    "storage_bucket": "music20-80e98.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180038087765:android:5fba01fdead75a9e",
+        "android_client_info": {
+          "package_name": "com.framgia.music"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180038087765-foc8blltr66dm3gftpsuonvbi1q3u3vo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.framgia.music",
+            "certificate_hash": "57d0025761f5f24daa3bc83dd4c92ecd78136ed2"
+          }
+        },
+        {
+          "client_id": "180038087765-0b9ajkl7h2m0so55t6o5u2n432j2ljva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLtho066LZ0hEJ7xFFhwBwwRwbSZ9GfJY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180038087765-0b9ajkl7h2m0so55t6o5u2n432j2ljva.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

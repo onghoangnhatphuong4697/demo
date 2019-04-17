@@ -29,6 +29,7 @@ import com.framgia.music.utils.Constant;
 import com.framgia.music.utils.common.ConnectionUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Admin on 3/8/2018.
@@ -44,7 +45,7 @@ public class TabHomeFragment extends BaseFragment
     private LinearLayout mLinearDot;
     private List<TrendingSliderFragment> mTrendingSliderFragmentList;
     private int mPagePosition = 0;
-    private TextView[] mTextViewsDot;
+    private TextView[] mTextViewsDot ;
     private RecyclerView mRecyclerViewRock, mRecyclerViewAmbient, mRecyclerViewClassical,
             mRecyclerViewCountry;
     private TrackListAdapter mAdapterRock, mAdapterAmbient, mAdapterClassical, mAdapterCountry;
@@ -109,11 +110,17 @@ public class TabHomeFragment extends BaseFragment
     @Override
     public void showSlider(List<Track> trackList) {
         mTrendingSliderFragmentList = new ArrayList<>();
-        for (Track track : trackList) {
+        List<String> mImages = new ArrayList<>();
+        mImages.add(getString(R.string.link1));
+        mImages.add(getString(R.string.link2));
+        mImages.add(getString(R.string.link3));
+        mImages.add(getString(R.string.link4));
+        mImages.add(getString(R.string.link5));
+        for (String track : mImages) {
             mTrendingSliderFragmentList.add(TrendingSliderFragment.newInstance(track));
         }
         TrendingTrackViewPager trendingTrackViewPager =
-                new TrendingTrackViewPager(getActivity().getSupportFragmentManager());
+                new TrendingTrackViewPager(Objects.requireNonNull(getActivity()).getSupportFragmentManager());
         trendingTrackViewPager.addData(mTrendingSliderFragmentList);
         mViewPagerSlider.setAdapter(trendingTrackViewPager);
         addDotIntoSlider();
@@ -159,7 +166,6 @@ public class TabHomeFragment extends BaseFragment
                         }
                     }
                 });
-
     }
 
     @Override
@@ -296,12 +302,13 @@ public class TabHomeFragment extends BaseFragment
         mLinearDot = view.findViewById(R.id.linear_dot);
         mViewPagerSlider.addOnPageChangeListener(this);
     }
-//ss
+
+    //ss
     private void updatePagePosition(int position) {
-        for (TextView textViewDView : mTextViewsDot) {
-            textViewDView.setTextColor(getResources().getColor(R.color.color_slider_in_active));
-        }
-        mTextViewsDot[position].setTextColor(getResources().getColor(R.color.colorAccent));
+//        for (TextView textViewDView : mTextViewsDot) {
+//            textViewDView.setTextColor(getResources().getColor(R.color.color_slider_in_active));
+//        }
+//        mTextViewsDot[position].setTextColor(getResources().getColor(R.color.colorAccent));
     }
 
     private void addDotIntoSlider() {

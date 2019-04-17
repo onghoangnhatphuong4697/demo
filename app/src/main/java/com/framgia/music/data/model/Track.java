@@ -154,6 +154,10 @@ public class Track implements Parcelable {
         return mArtist;
     }
 
+    public void setArtist(Artist artist) {
+        mArtist = artist;
+    }
+
     public void setUser(Artist artist) {
         mArtist = artist;
     }
